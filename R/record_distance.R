@@ -1,7 +1,11 @@
-#' The binary distance between two records
+#' The distance between two records
 #' @param a Record a
 #' @param b Record b
-#' @value A numeric value indicating how many discrepancies there are between two records.
+#' @return \code{binary_dist} returns a numeric value indicating how many discrepancies there are between two records.
+#'
+#' @examples
+#' data("rl_reg1")
+#' binary_dist(rl_reg1[1,], rl_reg1[2,])
 #'
 #' @export
 binary_dist <- function(a, b) {
@@ -13,9 +17,6 @@ binary_dist <- function(a, b) {
   sum(a != b)
 }
 
-#' The (weighted) column type specific distance between two records
-#' @param a Record a
-#' @param b Record b
 #' @param col_type A vector encoding the column type for each column in the dataset. Can take values
 #'                 in "categorical", "ordinal", "string", or "numeric"
 #' @param string_dist String distance function. Default is edit distance. Function must take at least
@@ -26,9 +27,22 @@ binary_dist <- function(a, b) {
 #'               which corresponds to no ordinal variables.
 #' @param ... Additional parameters passed to string distance function.
 #'
-#' @value A numeric value of the weighted column type specific distance between two records.
+#' @return \code{col_type_dist} return a numeric value of the weighted column type specific distance between two records.
+#'
+#' @rdname binary_dist
+#'
+#' @examples
+#' type <- c("string", "string", "numeric", "numeric",
+#'     "numeric", "categorical", "ordinal", "numeric", "numeric")
+#' order <- list(education = c("Less than a high school diploma",
+#'     "High school graduates, no college", "Some college or associate degree",
+#'     "Bachelor's degree only", "Advanced degree"))
+#'
+#' col_type_dist(rl_reg1[1,], rl_reg1[2,], col_type = type, order = order)
+#'
+#' @importFrom utils adist
 #' @export
-col_type_dist <- function(a, b, col_type, string_dist = adist, weights = NULL, orders = NULL, ...) {
+col_type_dist <- function(a, b, col_type, string_dist = utils::adist, weights = NULL, orders = NULL, ...) {
   ## error handling
   if(length(a) != length(b))
     stop("Records must be the same number of columns.")
