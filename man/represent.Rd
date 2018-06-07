@@ -10,7 +10,7 @@ represent(data, linkage, rep_method, parallel = TRUE, cores = NULL, ...,
 \arguments{
 \item{data}{A data frame of records to be represented.}
 
-\item{linkage}{A numeric vector indication the cluster ids post-record linkage for each record in \code{data}.}
+\item{linkage}{A numeric vector indicating the cluster ids post-record linkage for each record in \code{data}.}
 
 \item{rep_method}{Which method to use for representation. Valid options include "proto_minimax", "proto_random",
 and "composite".}
