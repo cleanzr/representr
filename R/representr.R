@@ -20,7 +20,7 @@
 #'
 #' Each of these three types of prototyping can be used from the function \link[=represent]{represent}.
 #'
-#' #' @section Posterior prototyping:
+#' @section Posterior prototyping:
 #'
 #' The posterior distribution of the linkage can be used in two ways in this package. The first, is as
 #' weights or in a distance function for the above point prototyping methods. The second, is through
