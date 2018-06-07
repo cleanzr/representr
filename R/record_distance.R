@@ -5,10 +5,10 @@
 #'
 #' @examples
 #' data("rl_reg1")
-#' binary_dist(rl_reg1[1,], rl_reg1[2,])
+#' dist_binary(rl_reg1[1,], rl_reg1[2,])
 #'
 #' @export
-binary_dist <- function(a, b) {
+dist_binary <- function(a, b) {
   ## error handling
   if(length(a) != length(b))
     stop("Records must be the same number of columns.")
@@ -22,14 +22,14 @@ binary_dist <- function(a, b) {
 #' @param string_dist String distance function. Default is edit distance. Function must take at least
 #'                    two arguments (strings)
 #' @param weights A vector of weights for each column for making some column distances more important. Must sum to 1.
-#'                Defaults to NULL, which is equal weights.
+#'                Defaults to equal weights.
 #' @param orders A named list containing the order of the levels in each ordinal column. Defaults to NULL,
 #'               which corresponds to no ordinal variables.
 #' @param ... Additional parameters passed to string distance function.
 #'
 #' @return \code{col_type_dist} return a numeric value of the weighted column type specific distance between two records.
 #'
-#' @rdname binary_dist
+#' @rdname dist_binary
 #'
 #' @examples
 #' type <- c("string", "string", "numeric", "numeric",
@@ -38,11 +38,11 @@ binary_dist <- function(a, b) {
 #'     "High school graduates, no college", "Some college or associate degree",
 #'     "Bachelor's degree only", "Advanced degree"))
 #'
-#' col_type_dist(rl_reg1[1,], rl_reg1[2,], col_type = type, order = order)
+#' dist_col_type(rl_reg1[1,], rl_reg1[2,], col_type = type, order = order)
 #'
 #' @importFrom utils adist
 #' @export
-col_type_dist <- function(a, b, col_type, string_dist = utils::adist, weights = NULL, orders = NULL, ...) {
+dist_col_type <- function(a, b, col_type, string_dist = utils::adist, weights = rep(1/length(a), length(a)), orders = NULL, ...) {
   ## error handling
   if(length(a) != length(b))
     stop("Records must be the same number of columns.")
@@ -52,9 +52,7 @@ col_type_dist <- function(a, b, col_type, string_dist = utils::adist, weights = 
     stop("Column type must be 'categorical', 'ordinal', 'string', or 'numeric'")
   if(class(string_dist) != "function")
     stop("string_dist must be a function.")
-  if(is.null(weights)) {
-    weights <- 1/length(a)
-  } else if(length(weights) != length(a)) {
+  if(length(weights) != length(a)) {
     stop("Weights must be of same length as number of columns")
   } else if(!identical(round(sum(weights), 15), 1)) {
     stop("Weights must sum to 1.")
@@ -68,6 +66,7 @@ col_type_dist <- function(a, b, col_type, string_dist = utils::adist, weights = 
       if(!all(c(a[,idx], b[,idx]) %in% orders[[names(a)[idx]]])) stop("Orders must be a named list corresponding to the levels in each ordinal column.")
     }
   }
+
 
   ## combine all column type distances
   p <- length(a)
