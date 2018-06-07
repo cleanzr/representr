@@ -1,5 +1,6 @@
 #' Prototype record from a cluster.
 #' @param cluster A data frame of the clustered records.
+#' @param prob A vector of length \code{nrow(cluster)} that sums to 1, giving the probability of selection.
 #' @param id Logical indicator to return id of record selected (TRUE) or actual record (FALSE). Note,
 #'     if returning id, must have original row numbers as rownames in each cluster.
 #'
@@ -14,10 +15,16 @@
 #' clust_proto_random(clusters[[1]])
 #'
 #' @export
-clust_proto_random <- function(cluster, id = TRUE) {
-
+clust_proto_random <- function(cluster, prob = rep(1/nrow(cluster), nrow(cluster)), id = TRUE) {
+  # error handling
   if(any(is.na(as.numeric(rownames(cluster)))) & id)
-      stop("If returning id, must have original row numbers as rownames.")
+    stop("If returning id, must have original row numbers as rownames.")
+  if(length(prob) != nrow(cluster))
+    stop("prob must be the same length as nrow(cluster).")
+  if(class(prob) != "numeric")
+    stop("prob must be a numeric vector.")
+  if(round(sum(prob), 15) != 1)
+    stop("prob must sum to 1.")
 
   n <- nrow(cluster)
 
@@ -31,7 +38,7 @@ clust_proto_random <- function(cluster, id = TRUE) {
   }
 
   ## randomly sample row to return
-  idx <- sample(seq_len(nrow(cluster)), 1)
+  idx <- sample(seq_len(nrow(cluster)), 1, prob = prob)
 
   if(!id) {
     cluster[idx, ]

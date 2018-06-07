@@ -7,17 +7,15 @@
 \title{representr: A package for creating representative records post-record linkage.}
 \description{
 The representr package provides two types of representative record generation:
-prototyping and composite.
+point prototyping and posterior prototyping.
 }
-\section{Prototyping}{
+\section{Point Prototyping}{
 
 
-write about prototyping
-}
+write about prototyping and composite
 
-\section{Composite record generation}{
+#' @section Posterior prototyping:
 
-
-write about composite
+write about posterior prototyping
 }
 

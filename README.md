@@ -1,5 +1,7 @@
 # representr
 
+[![Travis-CI Build Status](https://travis-ci.org/andeek/representr.svg?branch=master)](https://travis-ci.org/andeek/representr)
+
 Create representative records post-record linkage for use in downstream tasks after record linkage is performed. Multiple methods for creating the records are provided, including two methods based on the posterior distribution of linkage resulting from a Bayesian analysis.
 
 ## Installation

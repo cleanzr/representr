@@ -4,14 +4,15 @@
 \alias{represent}
 \title{Create a representative dataset post record-linkage.}
 \usage{
-represent(data, linkage, method, parallel = TRUE, cores = NULL, ...)
+represent(data, linkage, rep_method, parallel = TRUE, cores = NULL, ...,
+  scale = FALSE)
 }
 \arguments{
 \item{data}{A data frame of records to be represented.}
 
 \item{linkage}{A numeric vector indication the cluster ids post-record linkage for each record in \code{data}.}
 
-\item{method}{Which method to use for representation. Valid options include "proto_minimax", "proto_random",
+\item{rep_method}{Which method to use for representation. Valid options include "proto_minimax", "proto_random",
 and "composite".}
 
 \item{parallel}{Logical flag if to use parallel computation or not (via \code{foreach}).}
@@ -20,6 +21,10 @@ and "composite".}
 
 \item{...}{Additional parameters sent to cluster representation function. See
 \link[=clust_proto_minimax]{prototyping} or \link[=clust_composite]{composite} methods.}
+
+\item{scale}{If "proto_minimax" method is specified, logical flag to indicate if the column-type
+distance function should be scaled so that each distance takes value in [0, 1]. Defaults to
+FALSE.}
 }
 \description{
 Create a representative dataset post record-linkage.
@@ -27,7 +32,24 @@ Create a representative dataset post record-linkage.
 \examples{
 
 data("rl_reg1")
+
+## random prototyping
 rep_dat_random <- represent(rl_reg1, identity.rl_reg1, "proto_random", id = FALSE)
 head(rep_dat_random)
+
+## minimax prototyping
+col_type <- c("string", "string", "numeric", "numeric", "numeric", "categorical", "ordinal",
+    "numeric", "numeric")
+orders <- list(education = c("Less than a high school diploma", "High school graduates, no college",
+    "Some college or associate degree", "Bachelor's degree only", "Advanced degree"))
+weights <- c(.25, .25, .05, .05, .1, .15, .05, .05, .05)
+rep_dat_minimax <- represent(rl_reg1, identity.rl_reg1, "proto_minimax", id = FALSE,
+    distance = dist_col_type, col_type = col_type, weights = weights, orders = orders,
+    scale = TRUE)
+head(rep_dat_minimax)
+
+## composite prototyping
+rep_dat_composite <- represent(rl_reg1, identity.rl_reg1, "composite", col_type = col_type)
+head(rep_dat_composite)
 
 }

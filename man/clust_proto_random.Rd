@@ -5,12 +5,15 @@
 \alias{clust_proto_minimax}
 \title{Prototype record from a cluster.}
 \usage{
-clust_proto_random(cluster, id = TRUE)
+clust_proto_random(cluster, prob = rep(1/nrow(cluster), nrow(cluster)),
+  id = TRUE)
 
 clust_proto_minimax(cluster, distance, id = TRUE, ...)
 }
 \arguments{
 \item{cluster}{A data frame of the clustered records.}
+
+\item{prob}{A vector of length \code{nrow(cluster)} that sums to 1, giving the probability of selection.}
 
 \item{id}{Logical indicator to return id of record selected (TRUE) or actual record (FALSE). Note,
 if returning id, must have original row numbers as rownames in each cluster.}
