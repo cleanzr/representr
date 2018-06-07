@@ -45,7 +45,7 @@ of which there are 350 unique individuals.
 There is a known relationship between three of the
 variables in the dataset, blood pressure (bp), income, and sex.
 \deqn{bp = 160 + 10I(sex = "M") - income + 0.5 income*I(sex = "M") + \epsilon}
-where \eqn{\epsilon \sim Normal(0, \sigma^2)} and \eqn{\sigma = 1, 5}.
+where \eqn{\epsilon ~ Normal(0, \sigma^2)} and \eqn{\sigma = 1, 5}.
 
 The 150 duplicated records have randomly generated errors.
 }
