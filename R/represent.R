@@ -58,6 +58,17 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
   } else if(rep_method == "composite") {
     if(!("col_type" %in% arg_names))
       stop("Must supply column types for composite method. See help('clust_composite') for more options.")
+  } else if(rep_method == "proto_random") {
+    if("prob" %in% arg_names) {
+      ## must be list of length equal to number of clusters and total number of records
+      prob <- args[["prob"]]
+      if(length(prob) != length(unique(linkage))) stop("Probabilities must be list of length equal to number of clusters.")
+      if(length(do.call(c, prob)) != nrow(data)) stop("Total number of probabilities must equal total number of records.")
+      if(class(do.call(c, prob)) != "numeric") stop("Probabilities must be numeric.")
+
+      ## be sure everything sums to one
+      prob <- lapply(prob, function(p) p/sum(p))
+    }
   }
 
   ## scale option for minimaxm column-type distance
@@ -86,6 +97,9 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
   clusters <- split(data, linkage)
   k <- length(clusters)
 
+  ## make dummy prob in case not specified
+  if(!("prob" %in% arg_names) & rep_method == "proto_random") prob <- lapply(seq_len(k), function(i) rep(1/nrow(clusters[[i]]), nrow(clusters[[i]])))
+
   rep_fun <- switch(rep_method,
                     "proto_minimax" = clust_proto_minimax,
                     "proto_random" = clust_proto_random,
@@ -98,8 +112,13 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
   ## register i so that check won't complain
   i <- NULL
 
-  rep_dat <- foreach::foreach(i = 1:k, .combine = rbind) %doit%
-    do.call("rep_fun", c(list(cluster = clusters[[i]]), args)) # complicated because args = ...
+  if(rep_method == "proto_random") {
+    rep_dat <- foreach::foreach(i = 1:k, .combine = rbind) %doit%
+      do.call("rep_fun", c(list(cluster = clusters[[i]], prob = prob[[i]]), args)) # complicated because args = ...
+  } else {
+    rep_dat <- foreach::foreach(i = 1:k, .combine = rbind) %doit%
+      do.call("rep_fun", c(list(cluster = clusters[[i]]), args)) # complicated because args = ...
+  }
 
   if(parallel) doParallel::stopImplicitCluster()
 
