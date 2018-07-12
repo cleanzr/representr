@@ -68,6 +68,9 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
 
       ## be sure everything sums to one
       prob <- lapply(prob, function(p) p/sum(p))
+
+      ## remove prob from arg list
+      args <- args[arg_names != "prob"]
     }
   }
 
