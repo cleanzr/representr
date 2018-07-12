@@ -58,6 +58,19 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
   } else if(rep_method == "composite") {
     if(!("col_type" %in% arg_names))
       stop("Must supply column types for composite method. See help('clust_composite') for more options.")
+    if("weights" %in% arg_names) {
+      ## must be list of length equal to number of clusters and total number of records
+      weights <- args[["weights"]]
+      if(length(weights) != length(unique(linkage))) stop("Weights must be list of length equal to number of clusters.")
+      if(length(do.call(c, weights)) != nrow(data)) stop("Total number of Weights must equal total number of records.")
+      if(class(do.call(c, weights)) != "numeric") stop("Weights must be numeric.")
+
+      ## be sure everything sums to one
+      weights <- lapply(weights, function(p) p/sum(p))
+
+      ## remove prob from arg list
+      args <- args[arg_names != "weights"]
+    }
   } else if(rep_method == "proto_random") {
     if("prob" %in% arg_names) {
       ## must be list of length equal to number of clusters and total number of records
@@ -102,6 +115,7 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
 
   ## make dummy prob in case not specified
   if(!("prob" %in% arg_names) & rep_method == "proto_random") prob <- lapply(seq_len(k), function(i) rep(1/nrow(clusters[[i]]), nrow(clusters[[i]])))
+  if(!("weights" %in% arg_names) & rep_method == "composite") weights <- lapply(seq_len(k), function(i) rep(1/nrow(clusters[[i]]), nrow(clusters[[i]])))
 
   rep_fun <- switch(rep_method,
                     "proto_minimax" = clust_proto_minimax,
@@ -118,6 +132,9 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
   if(rep_method == "proto_random") {
     rep_dat <- foreach::foreach(i = 1:k, .combine = rbind) %doit%
       do.call("rep_fun", c(list(cluster = clusters[[i]], prob = prob[[i]]), args)) # complicated because args = ...
+  } else if(rep_method == "composite"){
+    rep_dat <- foreach::foreach(i = 1:k, .combine = rbind) %doit%
+      do.call("rep_fun", c(list(cluster = clusters[[i]], weights = weights[[i]]), args)) # complicated because args = ...
   } else {
     rep_dat <- foreach::foreach(i = 1:k, .combine = rbind) %doit%
       do.call("rep_fun", c(list(cluster = clusters[[i]]), args)) # complicated because args = ...
