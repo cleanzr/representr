@@ -86,7 +86,7 @@ pp_weights <- function(data, posterior_linkage, rep_method, parallel = TRUE, cor
   m <- nrow(posterior_linkage)
 
   posterior_rep <- foreach::foreach(i = 1:m, .combine = cbind) %doit% {
-    idx <- do.call("represent", c(list(data = data, linkage = posterior_linkage[i,], rep_method = rep_method, scale = FALSE, id = TRUE), args))
+    idx <- do.call("represent", c(list(data = data, linkage = posterior_linkage[i,], rep_method = rep_method, scale = FALSE, id = TRUE, parallel = FALSE), args))
     seq_len(nrow(data)) %in% idx
   }
 

@@ -6,6 +6,7 @@
 \alias{rl_reg5}
 \alias{identity.rl_reg1}
 \alias{identity.rl_reg5}
+\alias{linkage.rl}
 \title{500 records suitable for record linkage with additional regression variables}
 \format{\code{rl_reg1} and \code{rl_reg5} are data frames with 500 rows and 9 columns. Each row represents 1 records
 with the following columns:
@@ -24,7 +25,10 @@ with the following columns:
 
 \code{identity.rl_reg1} and \code{identity.rl_reg5} are integer vectors indicating the true
 record ids of the two datasets. Two records represent the same individual if and only if their
-corresponding identity values are equal.}
+corresponding identity values are equal.
+
+\code{linkage.rl} contains the result of running 30,000 iterations of a record linkage model using
+the package \code{blink}.}
 \source{
 Names and birthdates generated with the ANU Online Personal Data Generator and Corruptor (GeCO) version 0.1 \url{https://dmm.anu.edu.au/geco/}.
 }
@@ -36,6 +40,8 @@ rl_reg5
 identity.rl_reg1
 
 identity.rl_reg5
+
+linkage.rl
 }
 \description{
 Simulated datasets containing the name, birthdate, and additional attributes of 500 records,
