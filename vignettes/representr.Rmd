@@ -1,0 +1,221 @@
+---
+title: "Prototyping with `representr`"
+author: "Andee Kaplan"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Prototyping with `representr`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE
+)
+
+library(ggplot2)
+```
+
+Record linkage (entity resolution or de-duplication) is used to join multiple databases to remove duplicate entities. While record linkage removes the duplicate entities from the data, many researchers are interested in performing inference, prediction, or post-linkage analysis on the linked data (e.g., regression or capture-recapture), which we call the *downstream task*. Depending on the downstream task, one may wish to find the most representative record before performing the post-linkage analysis. For example, when the values of features used in a downstream task differ for linked data, which values should be used? This is where `representr` comes in.
+
+As motivation, consider modeling blood pressure (bp) using the following two features (covariates): income and sex. In addition, assume that we want to fit this model after performing record linkage using the following features: first and last name and full data of birth. Here is an example of four records that represent the same individual using data that is in the `representr` package. 
+
+```{r ex-records}
+# load libraries
+library(representr)
+
+# load data
+data("rl_reg1")
+data("identity.rl_reg1") # true identity of each record
+```
+
+```{r, echo=FALSE}
+true_clusters <- split(rl_reg1, identity.rl_reg1)
+knitr::kable(true_clusters[[names(which(table(identity.rl_reg1) == 4)[1])]])
+```
+
+Examination of this table raises important questions that need to be addressed before performing a particular downstream task, such as which values of bp, income, and sex should be used as the representative features (or covariates) in a regression model? In this vignette, we will provide multiple solutions to this question using a prototyping approach.
+
+# Record linkage
+
+Before we perform prototyping to get a representative data set using `representr`, we must first perform record linkage. For the examples in this vignette, we will use `blink`, which is a Bayesian record linkage model. For this example, we will run only a small number of iterations, which will certainly not have converged. For a real example, we would want to let this model run longer.
+
+```{r rl, results='hide'}
+# load blink
+library(blink)
+
+# params for running record linkage
+a <- 1; b <- 99 # distortion hyperparams
+c <- 1 # string density hyperparams
+d <- function(string1, string2){ 
+  n1 <- length(string1)
+  n2 <- length(string2)
+  res <- matrix(NA, n1, n2)
+  for(i in seq_len(n1)) {
+    for(j in seq_len(n2)) {
+      res[i, j] <- jarowinkler(string1[i], string2[j])
+    }
+  } 
+  res
+}  # string distance function
+num.gs <- 10 # number of iterations
+M <- nrow(rl_reg1) # upper bound on number of entities
+str_idx <- c(1, 2) # string columns
+cat_idx <- c(3, 4, 5) # categorical columns
+
+# data prep 
+# X.c contains the categorical variables
+# X.s contains the string variables 
+X.c <- apply(as.matrix(rl_reg1[, cat_idx]), 2, as.character)
+X.s <- as.matrix(rl_reg1[, str_idx])
+
+# X.c and X.s include all files "stacked" on top of each other.
+# The vector below keeps track of which rows of X.c and X.s are in which files.
+file.num <- rep(1, nrow(rl_reg1))
+
+# perform record linkage  
+linkage.rl <- rl.gibbs(file.num, X.s, X.c, num.gs=num.gs, a=a, b=b, c=c, d=d, M=M)
+```
+
+```{r delete-blink-res, echo=FALSE}
+file.remove(dir(path = ".", pattern="lambda*") )
+```
+
+In fact, we can load the results of running this model for $100,000$ iterations, which have been stored in the package as a data object called `linkage.rl`.
+
+```{r}
+data("linkage.rl")
+```
+
+# Prototyping methods
+
+We have four methods to choose or create the representative record from linked data included in `representr`. This process is a function of the data and the linkage structure, and we present both probabilistic and deterministic functions. The result in all cases is a representative data set to be passed on to the downstream task. The prototyping is completed using the `represent()` function.
+
+
+## Random Prototyping
+
+Our first proposal to choose a representative record (*prototype*) for a cluster is the simplest and serves as a baseline or benchmark. One simply chooses the representative record uniformly at random or using a more informed distribution. 
+
+For demonstration purposes, we can create a representative dataset using the last iteration of the results from running the record linkage model using `blink`.
+
+```{r random}
+random_id <- represent(rl_reg1, linkage.rl[nrow(linkage.rl),], "proto_random")
+rep_random <- rl_reg1[random_id,]
+```
+```{r}
+knitr::kable(head(rep_random))
+```
+
+## Minimax Prototyping
+
+Our second proposal to choose a representative record is to select the record that "most closely captures" that of the latent entity. Of course, this is quite subjective. We propose selecting the record whose farthest neighbors within the cluster is closest, where closeness is measured by a record distance function, $d_r(\cdot)$. We can write this as the record $r = (i, j)$ within each cluster $\Lambda_{j'}$ such that
+$$
+r = \arg\min\limits_{(i, j) \in \Lambda_{j'}} \max\limits_{(i^*, j^*) \in \Lambda_{j'}} d_r((i, j), (i^*, j^*)).
+$$
+The result is a set of representative records, one for each latent individual, that is closest to the other records in each cluster. When there is a tie within the cluster, we select a record uniformly at random.
+
+There are many distance functions that can be used for $d_r(\cdot, \cdot)$. We define the distance function to be a weighted average of individual variable-level distances that depend on the column type. Given two records, $(i, j)$ and $(i*, j*)$, we use a weighted average of column-wise distances (based on the column type) to produce the following single distance metric:
+$$
+d_r((i, j), (i*, j*)) = \sum\limits_{\ell = 1}^p w_\ell d_{r\ell}((i, j), (i^*, j^*)),
+$$
+where $\sum\limits_{\ell = 1}^p w_\ell = 1$. The column-wise distance functions $d_{r\ell}(\cdot, \cdot)$ we use are presented below.
+
+| Column      | $d_{r\ell}(\cdot, \cdot)$                                      |
+|:------------|----------------------------------------------------------------|
+| String      | Any string distance function, i.e. Jaro-Winkler string distance |
+| Numeric     | Absolute distance, $d_{r\ell}((i, j), (i^*, j^*)) = \mid x_{ij\ell} - x_{i^*j^*\ell} \mid$ |
+| Categorical | Binary distance, $d_{r\ell}((i, j), (i^*, j^*)) = \mathbb{I}(x_{ij\ell} != x_{i^*j^*\ell})$ |
+| Ordinal     | Absolute distance between levels. Let $\gamma(x_{ij\ell})$ be the order of the value $x_{ij\ell}$, then $d_{r\ell}((i, j), (i^*, j^*)) = \mid \gamma(x_{ij\ell}) - \gamma(x_{i^*j^*\ell}) \mid$  |
+
+The weighting of variable distances is used to place importance on individual features according to prior knowledge of the data set and to scale the feature distances to a common range. In this paper, we scale all column-wise distances to be values between $0$ and $1$.
+
+Again, we can create a representative dataset using the last iteration of the results from running the record linkage model using `blink`. But this time we need to specify some more parameters, like what types the columns are.
+
+```{r minimax}
+col_type <- c("string", "string", "numeric", "numeric", "numeric", "categorical", "ordinal", "numeric", "numeric")
+orders <- list(education = c("Less than a high school diploma", "High school graduates, no college", "Some college or associate degree", "Bachelor's degree only", "Advanced degree"))
+weights <- c(.25, .25, .05, .05, .1, .15, .05, .05, .05)
+minimax_id <- represent(rl_reg1, linkage.rl[nrow(linkage.rl),], "proto_minimax",
+                        distance = dist_col_type, col_type = col_type, 
+                        weights = weights, orders = orders, scale = TRUE)
+rep_minimax <- rl_reg1[minimax_id,]
+```
+```{r}
+knitr::kable(head(rep_minimax))
+```
+
+## Composite Records
+
+Our third proposal to choose a representative record is by aggregating the records (in each cluster) to form a composite record that includes information from each linked record. The form of aggregation can depend on the column type, and the aggregation itself can be weighted by some prior knowledge of the data sources or use the posterior information from the record linkage model. For quantitative variables, we use a weighted arithmetic mean to combine linked values, whereas for categorical variables, a weighted majority vote is used. For string variables, we use a weighted majority vote for each character, which allows for noisy strings to differ on a continuum.
+
+```{r composite}
+rep_composite <- represent(rl_reg1, linkage.rl[nrow(linkage.rl),], "composite", col_type = col_type)
+```
+```{r}
+knitr::kable(head(rep_composite))
+```
+
+## Posterior Prototyping
+
+Our fourth proposal to choose a representative record utilizes the minimax prototyping method in a fully Bayesian setting. This is desirable as the posterior distribution of the linkage is used to weight the downstream tasks, which allows the error from the record linkage task to be naturally propagated into the downstream task.
+
+We propose two methods for utilizing the posterior prototyping (PP) weights --- a weighted downstream task and a thresholded representative data set based on the weights. As already mentioned, PP weights naturally propagate the linkage error into the downstream task, which we now explain. For each MCMC iteration from the Bayesian record linkage model, we obtain the most representative records using minimax prototyping and then compute the probability of each record being selected over all MCMC iterations. The posterior prototyping (PP) probabilities can then either be used as weights for each record in the regression or as a thresholded variant where we only include records whose PP weights are above $0.5$. Note that a record with PP weight above 0.5 has a posterior probability greater than 0.5 of being chosen as a prototype and should be included in the final data set.
+
+```{r pp}
+pp_weights <- pp_weights(rl_reg1, linkage.rl[seq(80000, 100000, by = 100), ], 
+                         "proto_minimax", distance = dist_col_type, 
+                         col_type = col_type, weights = weights, orders = orders, 
+                         scale = TRUE)
+```
+
+We can look at the minimax PP weights distribution for the true and duplicated records in the data set as an example. Note that the true records consistently have higher PP weights and the proportion of duplicated records with high weights is relatively low.
+
+```{r thresh-plot, echo = FALSE}
+data.frame(pp_weights = pp_weights,
+           true = seq_len(nrow(rl_reg1)) %in% unique(identity.rl_reg1),
+           included = pp_weights >= .5) -> threshold_df
+
+ggplot(threshold_df) +
+  geom_histogram(aes(pp_weights, fill = true), position = "dodge") +
+  geom_vline(aes(xintercept = .5), lty = 2, alpha = .5) +
+  xlab("Posterior Prototyping weights") +
+  ylab("") +
+  scale_fill_discrete("True record") 
+```
+
+We can make a representative dataset with these weights by using the cutoff of $0.5$.
+
+```{r pp_thresh}
+rep_pp_thresh <- rl_reg1[pp_weights > .5, ]
+```
+```{r}
+knitr::kable(head(rep_pp_thresh))
+```
+
+
+These four proposed methods each have potential benefits. The goal of prototyping is to select the correct representations of latent entities as often as possible; however, uniform random selection has no means to achieve this goal. Turning to minimax selection, if a distance function can accurately reflect the distance between pairs of records in the data set, then this method may perform well. Alternatively, composite records necessarily alter the data for all entities with multiple copies in the data, affecting some downstream tasks (like linear regression) heavily. The ability of posterior prototyping to propagate record linkage error to the downstream task is an attractive feature and a great strength of the Bayesian paradigm. In addition, the ability to use the entire posterior distribution of the linkage structure also poses the potential for superior downstream performance.
+
+# Evaluation
+
+We can evaluate the performance of our methods by assessing the distributional closeness of the representative dataset to the true records. The distributional closeness of the representative datasets to the true records is useful because one of the benefits of using a two-stage approach to record linkage and downstream analyses is the ability to perform multiple analyses with the same data set. As such, downstream performance of representative records may be dependent on the type of downstream task that is being performed. In order to assess the distributional closeness of the representative data sets to the truth, we use an empirical Kullback-Leibler (KL) divergence metric. Let $\hat{F}_{rep}(\boldsymbol x)$ and $\hat{F}_{true}(\boldsymbol x)$ be the empirical distribution functions for the representative data set and true data set, respectively (with continuous variables transformed to categorical using a histogram approach with statistically equivalent data-dependent bins). The empirical KL divergence metric we use is then defined as
+$$
+D_{KL}(\hat{F}_{rep} || \hat{F}_{true}) = \sum_{\boldsymbol x} \hat{F}_{rep}(\boldsymbol x) \log\left(\frac{\hat{F}_{rep}(\boldsymbol x)}{\hat{F}_{true}(\boldsymbol x)}\right).
+$$
+
+This metric is accessed in `representr` using the `emp_kl_div()` command.
+
+```{r empkl_div}
+true_dat <- rl_reg1[unique(identity.rl_reg1),]
+emp_kl_div(true_dat, rep_random, c("sex"), c("income", "bp"))
+emp_kl_div(true_dat, rep_minimax, c("sex"), c("income", "bp"))
+emp_kl_div(true_dat, rep_composite, c("sex"), c("income", "bp"))
+emp_kl_div(true_dat, rep_pp_thresh, c("sex"), c("income", "bp"))
+```
+
+The representative dataset based on the posterior prototyping weights is the closest to the truth using the three variables we might be interested in using for regression. This might indicate that we should use this representation in our downstream model.
+
+
+
