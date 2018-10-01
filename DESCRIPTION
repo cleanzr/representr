@@ -19,7 +19,7 @@ Imports:
   foreach,
   dplyr
 Suggests: knitr,
-    rmarkdown,
-    blink,
-    ggplot2
+  rmarkdown,
+  blink,
+  ggplot2
 VignetteBuilder: knitr
