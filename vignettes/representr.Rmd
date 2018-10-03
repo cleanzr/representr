@@ -19,7 +19,15 @@ knitr::opts_chunk$set(
 library(ggplot2)
 ```
 
-Record linkage (entity resolution or de-duplication) is used to join multiple databases to remove duplicate entities. While record linkage removes the duplicate entities from the data, many researchers are interested in performing inference, prediction, or post-linkage analysis on the linked data (e.g., regression or capture-recapture), which we call the *downstream task*. Depending on the downstream task, one may wish to find the most representative record before performing the post-linkage analysis. For example, when the values of features used in a downstream task differ for linked data, which values should be used? This is where `representr` comes in.
+# Background and Motivating Example 
+
+Record linkage (entity resolution or de-duplication) is used to join multiple databases to remove duplicate entities. While record linkage removes the duplicate entities from the data, many researchers are interested in performing inference, prediction, or post-linkage analysis on the linked data (e.g., regression or capture-recapture), which we call the *downstream task*. Depending on the downstream task, one may wish to find the most representative record before performing the post-linkage analysis. For example, when the values of features used in a downstream task differ for linked data, which values should be used? This is where `representr` comes in. Before introducing our new package `representr` from the paper Kaplan, Betancourt, and Steorts (2018), we first provide an introduction to record linkage. 
+
+ATTN: Andee: add in your record linkage databases here and explain the record linkage problem. (You'll want to do this the same way here as you're going to do in your talk. So do it here in more detail and shorter in your talk. You can reference this vignette nicely in your talk for those that want to see this more in depth! )
+
+# The Downstream Task
+
+ATTN: Make it more clear that this is the result AFTER record linkage! 
 
 As motivation, consider modeling blood pressure (bp) using the following two features (covariates): income and sex. In addition, assume that we want to fit this model after performing record linkage using the following features: first and last name and full data of birth. Here is an example of four records that represent the same individual using data that is in the `representr` package. 
 
