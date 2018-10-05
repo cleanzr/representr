@@ -59,9 +59,12 @@ library(ggplot2)
 set.seed(1234)
 ```
 
-Record linkage (entity resolution or de-duplication) is used to join multiple databases to remove duplicate entities. While record linkage removes the duplicate entities from the data, many researchers are interested in performing inference, prediction, or post-linkage analysis on the linked data (e.g., regression or capture-recapture), which we call the *downstream task*. Depending on the downstream task, one may wish to find the most representative record before performing the post-linkage analysis. For example, when the values of features used in a downstream task differ for linked data, which values should be used? This is where `representr` comes in [@kaplan2018posterior].
 
-As motivation, consider modeling blood pressure (bp) using the following two features (covariates): income and sex. In addition, assume that we want to fit this model after performing record linkage using the following features: first and last name and full data of birth. The data is available in the `representr` packages as `rl_reg1`, `rl_reg2`, or `rl_reg5` (rl = record linkage, reg = regression) based on the noisiness in the relationship to blood pressure (1, 2, or 5). 
+# Background and Motivating Example
+
+Record linkage (entity resolution or de-duplication) is used to join multiple databases to remove duplicate entities. While record linkage removes the duplicate entities from the data, many researchers are interested in performing inference, prediction, or post-linkage analysis on the linked data (e.g., regression or capture-recapture), which we call the *downstream task*. Depending on the downstream task, one may wish to find the most representative record before performing the post-linkage analysis. For example, when the values of features used in a downstream task differ for linked data, which values should be used? This is where `representr` comes in. Before introducing our new package `representr` from the paper @kaplan2018posterior, we first provide an introduction to record linkage. 
+
+Throughout this vignette, we will use data that is available in the `representr` package, `rl_reg1` (rl = record linkage, reg = regression, 1 = amount of noisiness).
 
 ```{r ex-records}
 # load libraries
@@ -72,19 +75,27 @@ data("rl_reg1") # data for record linkage and regression
 data("identity.rl_reg1") # true identity of each record
 ```
 
-
-Here is an example of four records that represent the same individual using data that is in the `representr` package. 
-
-```{r, echo=FALSE}
-true_clusters <- split(rl_reg1, identity.rl_reg1)
-knitr::kable(true_clusters[[names(which(table(identity.rl_reg1) == 4)[1])]])
+```{r echo = FALSE}
+knitr::kable(head(rl_reg1))
 ```
 
-Examination of this table raises important questions that need to be addressed before performing a particular downstream task, such as which values of bp, income, and sex should be used as the representative features (or covariates) in a regression model? In this vignette, we will provide multiple solutions to this question using a prototyping approach.
+This is simulated data, which consists of 500 records with 30% duplication and the following attributes:
 
-# Record linkage
+- `fname`: First name
+- `lname`: Last name
+- `bm`: Birth month (numeric)
+- `bd`: Birth day
+- `by`: Birth year
+- `sex`: Sex ("M" or "F")
+- `education`: Education level ("Less than a high school diploma", ""High school graduates, no college", "Some college or associate degree", "Bachelor's degree only", or "Advanced degree")
+- `income`: Yearly income (in $1000s)
+- `bp`: Systolic blood pressure
 
-Before we perform prototyping to get a representative data set using `representr`, we must first perform record linkage. For the examples in this vignette, we will use `blink` [@blink], which is a Bayesian record linkage model [@steorts2015entity]. For this example, we will run only a small number of iterations, which will certainly not have converged. For a real example, we would want to let this model run longer.
+## Record linkage
+
+Before we perform prototyping to get a representative data set using `representr`, we must first perform record linkage to remove duplicates and resolve entities present in the dataset. In the absense of unique identifying information (like a social security number), we can use probabilistic methods to perform record linkage. These methods consist of clustering records to latent (or true and unknown) individuals in the dataset.
+
+For the examples in this vignette, we will use `blink` [@blink], which is a Bayesian record linkage model [@steorts2015entity]. For this example, we will run only a small number of iterations, which will certainly not have converged. For a real example, we would want to let this model run longer.
 
 ```{r rl, results='hide'}
 # load blink
@@ -133,6 +144,25 @@ In fact, we can load the results of running this model for $100,000$ iterations,
 data("linkage.rl")
 ```
 
+
+## The Downstream Task
+
+After record linkage is complete, one may want to perform analyses of the linked data. This is what we call the "downstream task". As motivation, consider modeling blood pressure (bp) using the following two features (covariates): income and sex in our example data `rl_reg1`. We want to fit this model after performing record linkage using the following features: first and last name and full data of birth. Here is an example of four records that represent the same individual (based on the results from record linkage) using data that is in the `representr` package. 
+
+```{r, echo=FALSE}
+# take the last iteration of linkage for lambda value
+lambda <- linkage.rl[nrow(linkage.rl),]
+
+# split data by linkage results
+clusters <- split(rl_reg1, lambda)
+```
+
+```{r, echo=FALSE}
+knitr::kable(clusters[[names(which(table(lambda) == 4)[1])]])
+```
+
+Examination of this table raises important questions that need to be addressed before performing a particular downstream task, such as which values of bp, income, and sex should be used as the representative features (or covariates) in a regression model? In this vignette, we will provide multiple solutions to this question using a prototyping approach.
+
 # Prototyping methods
 
 We have four methods to choose or create the representative record from linked data included in `representr`. This process is a function of the data and the linkage structure, and we present both probabilistic and deterministic functions. The result in all cases is a representative data set to be passed on to the downstream task. The prototyping is completed using the `represent()` function.
@@ -145,9 +175,6 @@ Our first proposal to choose a representative record (*prototype*) for a cluster
 For demonstration purposes, we can create a representative dataset using the last iteration of the results from running the record linkage model using `blink`. This is accomplished using the `represent()` function, and passing through the type of prototyping to be `proto_random`.
 
 ```{r random}
-# take the last iteration of linkage for lambda value
-lambda <- linkage.rl[nrow(linkage.rl),]
-
 # ids for representative records (random)
 random_id <- represent(rl_reg1, lambda, "proto_random")
 rep_random <- rl_reg1[random_id,] # representative records (random)
