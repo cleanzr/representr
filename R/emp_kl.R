@@ -45,12 +45,13 @@ nest_cuts <- function(dat, numeric_vars, T_m) {
 # @param cuts_list List of cuts, from nest_cuts()
 nest_bins <- function(dat, cuts_list) {
   #condition based on the cuts_list
-  if(length(cuts_list) > 0) {
+  cuts <- data.frame()
+  if(length(cuts_list) > 0 & nrow(dat) > 0) {
     col <- names(cuts_list)
     cut_pts <- cuts_list[[col]]$cut_pts
     subcut_list <- cuts_list[[col]][-1]
 
-    cuts <- data.frame(as.character(cut(dat[, col], cut_pts, right = TRUE, include.lowest = TRUE)), stringsAsFactors = FALSE)
+    cuts <- data.frame(as.character(cut(dat[, col], cut_pts, right = TRUE, include.lowest = TRUE)))
     names(cuts) <- col
 
     if(length(subcut_list) > 0) {
@@ -67,6 +68,7 @@ nest_bins <- function(dat, cuts_list) {
   }
   cuts
 }
+
 
 # get freqs for dataset
 # @param data_set data to get freqs for
