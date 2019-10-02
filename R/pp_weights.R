@@ -27,7 +27,7 @@
 #'     "Some college or associate degree", "Bachelor's degree only", "Advanced degree"))
 #' weights <- c(.25, .25, .05, .05, .1, .15, .05, .05, .05)
 #' pp_weight <- pp_weights(rl_reg1, post_link, "proto_minimax", distance = dist_col_type,
-#'     col_type = col_type, weights = weights, orders = orders, scale = TRUE)
+#'     col_type = col_type, weights = weights, orders = orders, scale = TRUE, parallel = FALSE)
 #'
 #' # threshold by posterior prototyping weights
 #' head(rl_reg1[pp_weight > 0.5, ])

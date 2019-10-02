@@ -7,5 +7,27 @@ Create representative records post-record linkage for use in downstream tasks af
 ## Installation
 
 ```
-devtools::install_github("andeek/representr")
+devtools::install_github("cleanzer/representr")
 ```
+
+## Citation
+
+This package implements the methods introduced in the following paper:
+
+> Kaplan, Andee, Brenda Betancourt, and Rebecca C. Steorts. "Posterior Prototyping: Bridging the Gap between Bayesian Record Linkage and Regression." arXiv preprint arXiv:1810.01538 (2018).
+
+
+## Background
+
+Record linkage (entity resolution or de-duplication) is used to join multiple databases to remove duplicate entities. While record linkage removes the duplicate entities from the data, many researchers are interested in performing inference, prediction, or post-linkage analysis on the linked data (e.g., regression or capture-recapture), which we call the *downstream task*. Depending on the downstream task, one may wish to find the most representative record before performing the post-linkage analysis. For example, when the values of features used in a downstream task differ for linked data, which values should be used? This is where `representr` comes in.
+
+## Main functions
+
+The two main functions in `representr` are `represent` and `pp_weights`, which perform pointwise and fully Bayesian prototyping, respectively. Additionally, we have added a function aid in the evaluation of prototyping methods by estimating an empirical KL divergence through the function `emp_kl`. To read more about the specific prototyping functions available, see the help pages.
+
+```
+help(representr)
+```
+
+
+

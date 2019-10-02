@@ -36,7 +36,7 @@ Wang, Qing, Sanjeev R. Kulkarni, and Sergio Verdú. "Divergence estimation of co
 data("rl_reg1")
 
 ## random prototyping
-rep_dat_random <- represent(rl_reg1, identity.rl_reg1, "proto_random", id = FALSE)
+rep_dat_random <- represent(rl_reg1, identity.rl_reg1, "proto_random", id = FALSE, parallel = FALSE)
 
 ## empirical KL divergence
 cat_vars <- c("sex")

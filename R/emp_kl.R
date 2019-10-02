@@ -110,7 +110,7 @@ get_freqs <- function(data_set, categoric_vars, numeric_vars, true_cut_list, wei
 #' data("rl_reg1")
 #'
 #' ## random prototyping
-#' rep_dat_random <- represent(rl_reg1, identity.rl_reg1, "proto_random", id = FALSE)
+#' rep_dat_random <- represent(rl_reg1, identity.rl_reg1, "proto_random", id = FALSE, parallel = FALSE)
 #'
 #' ## empirical KL divergence
 #' cat_vars <- c("sex")

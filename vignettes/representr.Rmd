@@ -176,7 +176,7 @@ For demonstration purposes, we can create a representative dataset using the las
 
 ```{r random}
 # ids for representative records (random)
-random_id <- represent(rl_reg1, lambda, "proto_random")
+random_id <- represent(rl_reg1, lambda, "proto_random", parallel = FALSE)
 rep_random <- rl_reg1[random_id,] # representative records (random)
 ```
 
@@ -221,7 +221,7 @@ weights <- c(.25, .25, .05, .05, .1, .15, .05, .05, .05)
 # ids for representative records (minimax)
 minimax_id <- represent(rl_reg1, linkage.rl[nrow(linkage.rl),], "proto_minimax",
                         distance = dist_col_type, col_type = col_type, 
-                        weights = weights, orders = orders, scale = TRUE)
+                        weights = weights, orders = orders, scale = TRUE, parallel = FALSE)
 rep_minimax <- rl_reg1[minimax_id,] # representative records (minimax)
 ```
 
@@ -237,7 +237,7 @@ Our third proposal to choose a representative record is by aggregating the recor
 
 ```{r composite}
 # representative records (composite)
-rep_composite <- represent(rl_reg1, linkage.rl[nrow(linkage.rl),], "composite", col_type = col_type)
+rep_composite <- represent(rl_reg1, linkage.rl[nrow(linkage.rl),], "composite", col_type = col_type, parallel = FALSE)
 ```
 
 We can have a look at some of the representative records.
@@ -257,7 +257,7 @@ We propose two methods for utilizing the posterior prototyping (PP) weights --- 
 pp_weights <- pp_weights(rl_reg1, linkage.rl[seq(80000, 100000, by = 100), ], 
                          "proto_minimax", distance = dist_col_type, 
                          col_type = col_type, weights = weights, orders = orders, 
-                         scale = TRUE)
+                         scale = TRUE, parallel = FALSE)
 ```
 
 We can look at the minimax PP weights distribution for the true and duplicated records in the data set as an example. Note that the true records consistently have higher PP weights and the proportion of duplicated records with high weights is relatively low.

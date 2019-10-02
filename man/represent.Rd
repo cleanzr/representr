@@ -4,8 +4,8 @@
 \alias{represent}
 \title{Create a representative dataset post record-linkage.}
 \usage{
-represent(data, linkage, rep_method, parallel = TRUE, cores = NULL, ...,
-  scale = FALSE)
+represent(data, linkage, rep_method, parallel = TRUE, cores = NULL,
+  ..., scale = FALSE)
 }
 \arguments{
 \item{data}{A data frame of records to be represented.}
@@ -34,7 +34,7 @@ Create a representative dataset post record-linkage.
 data("rl_reg1")
 
 ## random prototyping
-rep_dat_random <- represent(rl_reg1, identity.rl_reg1, "proto_random", id = FALSE)
+rep_dat_random <- represent(rl_reg1, identity.rl_reg1, "proto_random", id = FALSE, parallel = FALSE)
 head(rep_dat_random)
 
 ## minimax prototyping
@@ -45,11 +45,12 @@ orders <- list(education = c("Less than a high school diploma", "High school gra
 weights <- c(.25, .25, .05, .05, .1, .15, .05, .05, .05)
 rep_dat_minimax <- represent(rl_reg1, identity.rl_reg1, "proto_minimax", id = FALSE,
     distance = dist_col_type, col_type = col_type, weights = weights, orders = orders,
-    scale = TRUE)
+    scale = TRUE, parallel = FALSE)
 head(rep_dat_minimax)
 
 ## composite prototyping
-rep_dat_composite <- represent(rl_reg1, identity.rl_reg1, "composite", col_type = col_type)
+rep_dat_composite <- represent(rl_reg1, identity.rl_reg1, "composite",
+                               col_type = col_type, parallel = FALSE)
 head(rep_dat_composite)
 
 }
