@@ -6,8 +6,8 @@ Create representative records post-record linkage for use in downstream tasks af
 
 ## Installation
 
-```
-devtools::install_github("cleanzer/representr")
+```r
+devtools::install_github("cleanzer/representr", build_vignettes = TRUE)
 ```
 
 ## Citation
@@ -25,9 +25,14 @@ Record linkage (entity resolution or de-duplication) is used to join multiple da
 
 The two main functions in `representr` are `represent` and `pp_weights`, which perform pointwise and fully Bayesian prototyping, respectively. Additionally, we have added a function aid in the evaluation of prototyping methods by estimating an empirical KL divergence through the function `emp_kl`. To read more about the specific prototyping functions available, see the help pages.
 
-```
+```r
 help(representr)
 ```
 
+For more extensive documentation of the use of this package, please see the vignette.
+
+```r
+vignette("representr")
+```
 
 
