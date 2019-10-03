@@ -35,4 +35,9 @@ For more extensive documentation of the use of this package, please see the vign
 vignette("representr")
 ```
 
+## Acknowledgements
+
+This work was partially supported by the National Science Foundation through NSF-1652431 and NSF-1534412 and the [Laboratory for Analytic Sciences at NC State University](https://ncsu-las.org).
+
+
 
