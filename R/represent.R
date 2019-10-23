@@ -36,6 +36,8 @@
 #'                                col_type = col_type, parallel = FALSE)
 #' head(rep_dat_composite)
 #'
+#' @importFrom stats complete.cases
+#'
 #' @export
 represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, ..., scale = FALSE) {
   ## error handling
@@ -47,6 +49,8 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
     stop("linkage must be numeric.")
   if(!(rep_method %in% c("proto_minimax", "proto_random", "composite")))
     stop("Valid options for rep_method include 'proto_minimax', 'proto_random', and 'composite'.")
+  if(sum(complete.cases(data)) != nrow(data))
+    stop("representr has no support for missing values at this time.")
 
   ## check that ... options match method chosen
   args <- list(...)
