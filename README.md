@@ -7,7 +7,7 @@ Create representative records post-record linkage for use in downstream tasks af
 ## Installation
 
 ```r
-devtools::install_github("cleanzer/representr", build_vignettes = TRUE)
+devtools::install_github("cleanzr/representr", build_vignettes = TRUE)
 ```
 
 ## Citation
