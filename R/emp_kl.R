@@ -130,7 +130,7 @@ emp_kl_div <- function(true_dat, rep_dat, categoric_vars, numeric_vars, l_m = 10
   })
 
   true_freq <- get_freqs(true_dat, categoric_vars, numeric_vars, true_cut_list)
-  rep_freq <- get_freqs(rep_dat, categoric_vars, numeric_vars, true_cut_list)
+  rep_freq <- get_freqs(rep_dat, categoric_vars, numeric_vars, true_cut_list, weights = weights)
   freqs <- merge(true_freq, rep_freq, by = c(numeric_vars, categoric_vars))
   freqs <- freqs[freqs$freq.x > 0, ] # true freqs > 0
 
