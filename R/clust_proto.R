@@ -88,8 +88,15 @@ clust_proto_minimax <- function(cluster, distance, id = TRUE, ...) {
   }
   idx <- which(max_dist == min(max_dist))
 
-  # in case of a tie, randomly break
-  if(length(idx) > 1) idx <- sample(idx, 1)
+  # in case of a tie, randomly break unless exactly equal
+  # if rows are exactly equal, pick the first one
+  if(length(idx) > 1) {
+    if(nrow(unique(cluster[idx,])) == 1) {
+      idx <- which.min(as.numeric(rownames(cluster)[idx]))
+    } else {
+      idx <- sample(idx, 1)
+    }
+  }
 
   if(!id) {
     cluster[idx, ]
