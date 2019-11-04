@@ -5,9 +5,6 @@ date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
     fig_caption: true
-  pdf_document:
-    highlight: null
-    number_sections: yes
 vignette: >
   %\VignetteIndexEntry{Prototyping with `representr`}
   %\VignetteEngine{knitr::rmarkdown}
