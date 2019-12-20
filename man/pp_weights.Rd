@@ -20,7 +20,10 @@ each row represents the cluster assignment for each record in \code{data} for 1 
 \item{cores}{If specified, the number of cores to use with \code{foreach}.}
 
 \item{...}{Additional parameters sent to cluster representation function. See
-\link[=clust_proto_minimax]{prototyping} or \link[=clust_composite]{composite} methods.}
+\link[=clust_proto_minimax]{minimax} or \link[=clust_proto_random]{random} methods. If passing a probability to
+the random method, must be list of the same length as the number of iterations in lambda and within each must be
+a list of the same length as the number of clusters. Within each should be a vector of probabilities, the same length
+as the number of rows in the cluster \code{prob[[iteration][[cluster]]}.}
 
 \item{scale}{If "proto_minimax" method is specified, logical flag to indicate if the column-type
 distance function should be scaled so that each distance takes value in [0, 1]. Defaults to

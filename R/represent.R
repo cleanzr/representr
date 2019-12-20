@@ -92,7 +92,7 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
     }
   }
 
-  ## scale option for minimaxm column-type distance
+  ## scale option for minimax column-type distance
   if(rep_method == "proto_minimax" & scale) {
     # default weights
     if(!("weights" %in% arg_names)) args$weights <- rep(1/ncol(data), ncol(data))
