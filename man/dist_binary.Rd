@@ -7,8 +7,15 @@
 \usage{
 dist_binary(a, b)
 
-dist_col_type(a, b, col_type, string_dist = utils::adist,
-  weights = rep(1/length(a), length(a)), orders = NULL, ...)
+dist_col_type(
+  a,
+  b,
+  col_type,
+  string_dist = utils::adist,
+  weights = rep(1/length(a), length(a)),
+  orders = NULL,
+  ...
+)
 }
 \arguments{
 \item{a}{Record a}

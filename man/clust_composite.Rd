@@ -4,8 +4,11 @@
 \alias{clust_composite}
 \title{Composite record from a cluster using a weighted average of each column values.}
 \usage{
-clust_composite(cluster, col_type, weights = rep(1/nrow(cluster),
-  nrow(cluster)))
+clust_composite(
+  cluster,
+  col_type,
+  weights = rep(1/nrow(cluster), nrow(cluster))
+)
 }
 \arguments{
 \item{cluster}{A data frame of the clustered records}

@@ -3,7 +3,6 @@
 \docType{package}
 \name{representr}
 \alias{representr}
-\alias{representr-package}
 \title{representr: A package for creating representative records post-record linkage.}
 \description{
 The representr package provides two types of representative record generation:

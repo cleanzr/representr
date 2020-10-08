@@ -10,7 +10,8 @@
 \alias{identity.rl_reg5}
 \alias{linkage.rl}
 \title{500 records suitable for record linkage with additional regression variables}
-\format{\code{rl_reg1} and \code{rl_reg5} are data frames with 500 rows and 9 columns. Each row represents 1 records
+\format{
+\code{rl_reg1} and \code{rl_reg5} are data frames with 500 rows and 9 columns. Each row represents 1 records
 with the following columns:
 \describe{
     \item{fname}{First name}
@@ -30,7 +31,20 @@ record ids of the two datasets. Two records represent the same individual if and
 corresponding identity values are equal.
 
 \code{linkage.rl} contains the result of running 100,000 iterations of a record linkage model using
-the package \code{blink}.}
+the package \code{blink}.
+
+An object of class \code{data.frame} with 500 rows and 9 columns.
+
+An object of class \code{data.frame} with 500 rows and 9 columns.
+
+An object of class \code{integer} of length 500.
+
+An object of class \code{integer} of length 500.
+
+An object of class \code{integer} of length 500.
+
+An object of class \code{matrix} (inherits from \code{array}) with 100000 rows and 500 columns.
+}
 \source{
 Names and birthdates generated with the ANU Online Personal Data Generator and Corruptor (GeCO) version 0.1 \url{https://dmm.anu.edu.au/geco/}.
 }

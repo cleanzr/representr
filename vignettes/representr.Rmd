@@ -1,6 +1,6 @@
 ---
 title: "Prototyping with `representr`"
-author: "Andee Kaplan"
+author: "Andee Kaplan and Rebecca C. Steorts"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
@@ -69,6 +69,7 @@ Throughout this vignette, we will use data that is available in the `representr`
 ```{r ex-records}
 # load libraries
 library(representr)
+library(RecordLinkage)
 
 # load data
 data("rl_reg1") # data for record linkage and regression
@@ -93,9 +94,11 @@ This is simulated data, which consists of 500 records with 30% duplication and t
 
 ## Record linkage
 
-Before we perform prototyping to get a representative data set using `representr`, we must first perform record linkage to remove duplicates and resolve entities present in the dataset. In the absense of unique identifying information (like a social security number), we can use probabilistic methods to perform record linkage. These methods consist of clustering records to latent (or true and unknown) individuals in the dataset.
+Before we perform prototyping to get a representative data set using `representr`, we must first perform record linkage to remove duplication in the data set.  In the absence of unique identifier (such as a social security number), we can use probabilistic methods to perform record linkage. We recommend the use of clustering records to a latent entity, known in the literature as graphical entity resolution. See Binette and Steorts (2020) for a review. 
 
-For the examples in this vignette, we will use `blink` [@blink], which is a Bayesian record linkage model [@steorts2015entity]. For this example, we will run only a small number of iterations, which will certainly not have converged. For a real example, we would want to let this model run longer.
+For the examples in this vignette, we will use `blink` [@blink],a Bayesian record linkage model [@steorts2015entity]. For this example, we will run only a small number of iterations, which will certainly not have converged. For a faster (more scalable version of this), we recommend recent work of Marchant et al (2020) using either dblink or dblinkR. 
+
+For a real example, we would want to let this model run longer.
 
 ```{r rl, results='hide'}
 # load blink

@@ -5,8 +5,11 @@
 \alias{clust_proto_minimax}
 \title{Prototype record from a cluster.}
 \usage{
-clust_proto_random(cluster, prob = rep(1/nrow(cluster), nrow(cluster)),
-  id = TRUE)
+clust_proto_random(
+  cluster,
+  prob = rep(1/nrow(cluster), nrow(cluster)),
+  id = TRUE
+)
 
 clust_proto_minimax(cluster, distance, id = TRUE, ...)
 }

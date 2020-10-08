@@ -4,8 +4,15 @@
 \alias{pp_weights}
 \title{Get posterior weights for each record post record-linkage using posterior prototyping.}
 \usage{
-pp_weights(data, posterior_linkage, rep_method, parallel = TRUE,
-  cores = NULL, ..., scale = FALSE)
+pp_weights(
+  data,
+  posterior_linkage,
+  rep_method,
+  parallel = TRUE,
+  cores = NULL,
+  ...,
+  scale = FALSE
+)
 }
 \arguments{
 \item{data}{A data frame of records to be represented.}

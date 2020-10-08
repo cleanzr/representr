@@ -4,8 +4,15 @@
 \alias{represent}
 \title{Create a representative dataset post record-linkage.}
 \usage{
-represent(data, linkage, rep_method, parallel = TRUE, cores = NULL,
-  ..., scale = FALSE)
+represent(
+  data,
+  linkage,
+  rep_method,
+  parallel = TRUE,
+  cores = NULL,
+  ...,
+  scale = FALSE
+)
 }
 \arguments{
 \item{data}{A data frame of records to be represented.}

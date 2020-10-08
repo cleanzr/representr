@@ -4,8 +4,14 @@
 \alias{emp_kl_div}
 \title{Calculate the empirical KL divergence for a representative dataset as compared to the true dataset}
 \usage{
-emp_kl_div(true_dat, rep_dat, categoric_vars, numeric_vars, l_m = 10,
-  weights = rep(1, nrow(rep_dat)))
+emp_kl_div(
+  true_dat,
+  rep_dat,
+  categoric_vars,
+  numeric_vars,
+  l_m = 10,
+  weights = rep(1, nrow(rep_dat))
+)
 }
 \arguments{
 \item{true_dat}{The true dataset}
