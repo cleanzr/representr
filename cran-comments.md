@@ -13,6 +13,11 @@ Maintainer: 'Andee Kaplan <andee.kaplan@colostate.edu>'
 
 New submission
 
+Possibly mis-spelled words in DESCRIPTION:
+  Betancourt (9:43)
+  Kaplan (9:35)
+  Steorts (9:55)
+
 ** running examples for arch 'x64' ... [17s] NOTE
 Examples with CPU (user + system) or elapsed time > 10s
             user system elapsed

@@ -32,6 +32,26 @@ references:
   issued:
     year: 2015
   publisher: International Society for Bayesian Analysis
+- id: marchant2020d
+  title: "d-blink: Distributed end-to-end Bayesian entity resolution"
+  author:
+    - family: Marchant  
+      given: Neil G
+    - family: Kaplan
+      given: Andee
+    - family: Elazar
+      given: Daniel N
+    - family: Rubinstein
+      given: Benjamin IP
+    - family: Steorts
+      given: Rebecca C
+  container-title: Journal of Computational and Graphical Statistics
+  volume: just-accepted
+  page: 1--42
+  type: article-journal
+  issued:
+    year: 2020
+  publisher: Taylor & Francis
 - id: kaplan2018posterior
   title: "Posterior Prototyping: Bridging the Gap between Record Linkage and Regression"
   author:
@@ -44,6 +64,17 @@ references:
   container-title: "arXiv preprint arXiv:1810.01538"
   type: article-journal
   URL: "https://arxiv.org/abs/1810.01538"
+  issued:
+    year: ""
+- id: binette2020almost
+  title: "(Almost) All of Entity Resolution"
+  author:
+    - family: Binette
+      given: Olivier
+    - family: Steorts
+      given: Rebecca C
+  container-title: "arXiv preprint arXiv:2008.04443"
+  URL: "https://arxiv.org/abs/2008.04443"
   issued:
     year: ""
 ---
@@ -94,9 +125,9 @@ This is simulated data, which consists of 500 records with 30% duplication and t
 
 ## Record linkage
 
-Before we perform prototyping to get a representative data set using `representr`, we must first perform record linkage to remove duplication in the data set.  In the absence of unique identifier (such as a social security number), we can use probabilistic methods to perform record linkage. We recommend the use of clustering records to a latent entity, known in the literature as graphical entity resolution. See Binette and Steorts (2020) for a review. 
+Before we perform prototyping to get a representative data set using `representr`, we must first perform record linkage to remove duplication in the data set.  In the absence of unique identifier (such as a social security number), we can use probabilistic methods to perform record linkage. We recommend the use of clustering records to a latent entity, known in the literature as graphical entity resolution. See [@binette2020almost] for a review. 
 
-For the examples in this vignette, we will use `blink` [@blink],a Bayesian record linkage model [@steorts2015entity]. For this example, we will run only a small number of iterations, which will certainly not have converged. For a faster (more scalable version of this), we recommend recent work of Marchant et al (2020) using either dblink or dblinkR. 
+For the examples in this vignette, we will use `blink` [@blink],a Bayesian record linkage model [@steorts2015entity]. For this example, we will run only a small number of iterations, which will certainly not have converged. For a faster (more scalable version of this), we recommend recent work of [@marchant2020d] using either dblink or dblinkR. 
 
 For a real example, we would want to let this model run longer.
 
