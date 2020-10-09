@@ -43,7 +43,7 @@ references:
       given: Rebecca C.
   container-title: "arXiv preprint arXiv:1810.01538"
   type: article-journal
-  URL: "http://arxiv.org/abs/1810.01538"
+  URL: "https://arxiv.org/abs/1810.01538"
   issued:
     year: ""
 ---

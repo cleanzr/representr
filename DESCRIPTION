@@ -3,9 +3,9 @@ Type: Package
 Title: Create Representative Records After Entity Resolution 
 Version: 0.1.0
 Authors@R: c(person("Andee", "Kaplan", email = "andee.kaplan@colostate.edu",
-                  role = c("aut", "cre")),
+                  role = "aut"),
              person("Brenda", "Betancourt", role = "aut"),
-             person("Rebecca C.", "Steorts", role = "aut"))
+             person("Rebecca C.", "Steorts", email = "beka@stat.duke.edu", role = c("aut", "cre")))
 Description: An implementation of Kaplan, Betancourt, Steorts (2020) <arXiv:1810.01538> that creates representative records for use in downstream tasks after entity resolution is performed. Multiple methods for creating the representative records (data sets) are provided. 
 License: GPL-3
 Encoding: UTF-8
