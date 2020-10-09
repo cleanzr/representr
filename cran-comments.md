@@ -13,15 +13,10 @@ Maintainer: 'Andee Kaplan <andee.kaplan@colostate.edu>'
 
 New submission
 
-** running examples for arch 'i386' ... [36s] NOTE
+** running examples for arch 'x64' ... [17s] NOTE
 Examples with CPU (user + system) or elapsed time > 10s
             user system elapsed
-pp_weights 32.59      0   32.59
-
-** running examples for arch 'x64' ... [43s] NOTE
-Examples with CPU (user + system) or elapsed time > 10s
-            user system elapsed
-pp_weights 38.94      0   38.94
+pp_weights 10.36   0.05   10.54
 
 
 ## Downstream dependencies
