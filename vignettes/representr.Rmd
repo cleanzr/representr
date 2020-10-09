@@ -69,7 +69,7 @@ Throughout this vignette, we will use data that is available in the `representr`
 ```{r ex-records}
 # load libraries
 library(representr)
-library(RecordLinkage)
+library(stringdist)
 
 # load data
 data("rl_reg1") # data for record linkage and regression
@@ -113,7 +113,7 @@ d <- function(string1, string2){ #jaro-winkler string distance
   res <- matrix(NA, n1, n2)
   for(i in seq_len(n1)) {
     for(j in seq_len(n2)) {
-      res[i, j] <- jarowinkler(string1[i], string2[j])
+      res[i, j] <- stringdist(string1[i], string2[j], method = "jw")
     }
   } 
   res
@@ -210,7 +210,7 @@ where $\sum\limits_{\ell = 1}^p w_\ell = 1$. The column-wise distance functions 
 | Categorical | Binary distance, $d_{r\ell}((i, j), (i^*, j^*)) = \mathbb{I}(x_{ij\ell} != x_{i^*j^*\ell})$ |
 | Ordinal     | Absolute distance between levels. Let $\gamma(x_{ij\ell})$ be the order of the value $x_{ij\ell}$, then $d_{r\ell}((i, j), (i^*, j^*)) = \mid \gamma(x_{ij\ell}) - \gamma(x_{i^*j^*\ell}) \mid$  |
 
-The weighting of variable distances is used to place importance on individual features according to prior knowledge of the data set and to scale the feature distances to a common range. In this paper, we scale all column-wise distances to be values between $0$ and $1$.
+The weighting of variable distances is used to place importance on individual features according to prior knowledge of the data set and to scale the feature distances to a common range. In this vignette, we scale all column-wise distances to be values between $0$ and $1$.
 
 Again, we can create a representative dataset using the last iteration of the results from running the record linkage model using `blink`. But this time we need to specify some more parameters, like what types the columns are. This is accomplished using the `represent()` function, and passing through the type of prototyping to be `proto_minimax`.
 
@@ -301,7 +301,7 @@ $$
 
 This metric is accessed in `representr` using the `emp_kl_div()` command.
 
-```{r empkl_div}
+```{r empkl_div, message = FALSE, warning = FALSE}
 true_dat <- rl_reg1[unique(identity.rl_reg1),] # true records
 emp_kl_div(true_dat, rep_random, c("sex"), c("income", "bp"))
 emp_kl_div(true_dat, rep_minimax, c("sex"), c("income", "bp"))
