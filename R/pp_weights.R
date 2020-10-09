@@ -19,7 +19,7 @@
 #' data(rl_reg1)
 #'
 #' # make a fake posterior distribution for the linkage
-#' m <- 100
+#' m <- 10
 #' n <- nrow(rl_reg1)
 #' post_link <- matrix(sample(seq_len(n), n*m, replace = TRUE), nrow = m)
 #'
