@@ -1,3 +1,7 @@
+# representr 0.1.1
+
+- Updated to include support for noLD (without long double)
+
 # representr 0.1.0
 
 - First release of `representr`

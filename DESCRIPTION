@@ -1,7 +1,7 @@
 Package: representr
 Type: Package
 Title: Create Representative Records After Entity Resolution 
-Version: 1.1.0
+Version: 0.1.1
 Authors@R: c(person("Andee", "Kaplan", email = "andee.kaplan@colostate.edu",
                   role = c("aut", "cre")),
              person("Brenda", "Betancourt", role = "aut"),

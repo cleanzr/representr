@@ -54,7 +54,7 @@ dist_col_type <- function(a, b, col_type, string_dist = utils::adist, weights = 
     stop("string_dist must be a function.")
   if(length(weights) != length(a)) {
     stop("Weights must be of same length as number of columns")
-  } else if(!identical(round(sum(weights), 15), 1)) {
+  } else if(!isTRUE(all.equal(1, sum(weights), tolerance = .Machine$double.eps^0.25))) {
     stop("Weights must sum to 1.")
   }
   if("ordinal" %in% col_type) {
