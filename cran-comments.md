@@ -2,7 +2,7 @@
 * local OS X install, R 4.0.2
 * Ubuntu 16.04.6 LTS (on travis-ci), R 4.0.2
 * win-builder (devel and release)
-* r-hub (devel with long doubles disabled)
+* r-hub x86_64-pc-linux-gnu (64-bit) (devel with long doubles disabled)
 
 ## R CMD check results
 There were no ERRORs or WARNINGs.

@@ -43,6 +43,9 @@ dist_binary <- function(a, b) {
 #' @importFrom utils adist
 #' @export
 dist_col_type <- function(a, b, col_type, string_dist = utils::adist, weights = rep(1/length(a), length(a)), orders = NULL, ...) {
+  ## noLD checks
+  eps <- ifelse(capabilities("long.double"), sqrt(.Machine$double.eps), 0.1)
+
   ## error handling
   if(length(a) != length(b))
     stop("Records must be the same number of columns.")
@@ -54,7 +57,7 @@ dist_col_type <- function(a, b, col_type, string_dist = utils::adist, weights = 
     stop("string_dist must be a function.")
   if(length(weights) != length(a)) {
     stop("Weights must be of same length as number of columns")
-  } else if(!isTRUE(all.equal(1, sum(weights), tolerance = .Machine$double.eps^0.25))) {
+  } else if(!isTRUE(all.equal(1, sum(weights), tolerance = eps))) {
     stop("Weights must sum to 1.")
   }
   if("ordinal" %in% col_type) {
