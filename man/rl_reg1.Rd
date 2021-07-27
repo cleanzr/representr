@@ -31,7 +31,7 @@ record ids of the two datasets. Two records represent the same individual if and
 corresponding identity values are equal.
 
 \code{linkage.rl} contains the result of running 100,000 iterations of a record linkage model using
-the package \code{blink}.
+the package \code{dblinkR}.
 
 An object of class \code{data.frame} with 500 rows and 9 columns.
 

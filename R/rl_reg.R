@@ -33,7 +33,7 @@
 #' corresponding identity values are equal.
 #'
 #' \code{linkage.rl} contains the result of running 100,000 iterations of a record linkage model using
-#' the package \code{blink}.
+#' the package \code{dblinkR}.
 #'
 #'
 #' @source Names and birthdates generated with the ANU Online Personal Data Generator and Corruptor (GeCO) version 0.1 \url{https://dmm.anu.edu.au/geco/}.

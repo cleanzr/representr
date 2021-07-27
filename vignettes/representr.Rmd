@@ -66,6 +66,15 @@ references:
   URL: "https://arxiv.org/abs/1810.01538"
   issued:
     year: ""
+- id: dblinkR
+  title: "dblinkR: R interface for dblink"
+  author:
+    - family: Marchant
+      given: Neil
+  issued:
+    year: "2021"
+  container-title: "R package version 0.2.0"
+  URL: "https://github.com/cleanzr/dblinkR"
 - id: binette2020almost
   title: "(Almost) All of Entity Resolution"
   author:
@@ -98,9 +107,8 @@ Record linkage (entity resolution or de-duplication) is used to join multiple da
 Throughout this vignette, we will use data that is available in the `representr` package, `rl_reg1` (rl = record linkage, reg = regression, 1 = amount of noisiness).
 
 ```{r ex-records}
-# load libraries
+# load library
 library(representr)
-library(stringdist)
 
 # load data
 data("rl_reg1") # data for record linkage and regression
@@ -127,52 +135,41 @@ This is simulated data, which consists of 500 records with 30% duplication and t
 
 Before we perform prototyping to get a representative data set using `representr`, we must first perform record linkage to remove duplication in the data set.  In the absence of unique identifier (such as a social security number), we can use probabilistic methods to perform record linkage. We recommend the use of clustering records to a latent entity, known in the literature as graphical entity resolution. See [@binette2020almost] for a review. 
 
-For the examples in this vignette, we will use `blink` [@blink],a Bayesian record linkage model [@steorts2015entity]. For this example, we will run only a small number of iterations, which will certainly not have converged. For a faster (more scalable version of this), we recommend recent work of [@marchant2020d] using either dblink or dblinkR. 
+<!-- For the examples in this vignette, we will use `blink` [@blink],a Bayesian record linkage model [@steorts2015entity]. For this example, we will run only a small number of iterations, which will certainly not have converged. For a faster (more scalable version of this), we recommend recent work of [@marchant2020d] using either dblink or dblinkR.  -->
 
-For a real example, we would want to let this model run longer.
+<!-- For a real example, we would want to let this model run longer. -->
 
-```{r rl, results='hide'}
-# load blink
-library(blink)
+<!-- ```{r rl, results='hide'} -->
+<!-- # load blink -->
+<!-- library(blink) -->
 
-# params for running record linkage
-a <- 1; b <- 99 # distortion hyperparams
-c <- 1 # string density hyperparams
-d <- function(string1, string2){ #jaro-winkler string distance
-  n1 <- length(string1)
-  n2 <- length(string2)
-  res <- matrix(NA, n1, n2)
-  for(i in seq_len(n1)) {
-    for(j in seq_len(n2)) {
-      res[i, j] <- stringdist(string1[i], string2[j], method = "jw")
-    }
-  } 
-  res
-}  # vector string distance function
-num.gs <- 10 # number of iterations
-M <- nrow(rl_reg1) # upper bound on number of entities
-str_idx <- c(1, 2) # string columns
-cat_idx <- c(3, 4, 5) # categorical columns
+<!-- # params for running record linkage -->
+<!-- a <- 1; b <- 99 # distortion hyperparams -->
+<!-- c <- 1 # string density hyperparams -->
+<!-- num.gs <- 10 # number of iterations -->
+<!-- M <- nrow(rl_reg1) # upper bound on number of entities -->
+<!-- str_idx <- c(1, 2) # string columns -->
+<!-- cat_idx <- c(3, 4, 5) # categorical columns -->
 
-# data prep 
-# X.c contains the categorical variables
-# X.s contains the string variables 
-X.c <- apply(as.matrix(rl_reg1[, cat_idx]), 2, as.character)
-X.s <- as.matrix(rl_reg1[, str_idx])
+<!-- # data prep  -->
+<!-- # X.c contains the categorical variables -->
+<!-- # X.s contains the string variables  -->
+<!-- X.c <- apply(as.matrix(rl_reg1[, cat_idx]), 2, as.character) -->
+<!-- X.s <- as.matrix(rl_reg1[, str_idx]) -->
 
-# X.c and X.s include all files "stacked" on top of each other.
-# The vector below keeps track of which rows of X.c and X.s are in which files.
-file.num <- rep(1, nrow(rl_reg1))
+<!-- # X.c and X.s include all files "stacked" on top of each other. -->
+<!-- # The vector below keeps track of which rows of X.c and X.s are in which files. -->
+<!-- file.num <- rep(1, nrow(rl_reg1)) -->
 
-# perform record linkage  
-linkage.rl <- rl.gibbs(file.num, X.s, X.c, num.gs=num.gs, a=a, b=b, c=c, d=d, M=M)
-```
+<!-- # perform record linkage   -->
+<!-- linkage.rl <- rl.gibbs(file.num, X.s, X.c, num.gs=num.gs, a=a, b=b, c=c, d=utils::adist, M=M) -->
+<!-- ``` -->
 
-```{r delete-blink-res, echo=FALSE, results="hide"}
-file.remove(dir(path = ".", pattern="lambda*") )
-```
+<!-- ```{r delete-blink-res, echo=FALSE, results="hide"} -->
+<!-- file.remove(dir(path = ".", pattern="lambda*") ) -->
+<!-- ``` -->
 
-In fact, we can load the results of running this model for $100,000$ iterations, which have been stored in the package as a data object called `linkage.rl`.
+For the examples in this vignette, we have fit the model in recent work of [@marchant2020d] using `dblinkR` [@dblinkR]. Please see associated vignette for details on using `dblinkR`. We load the results of running this record linkage model for $100,000$ iterations, which have been stored in the package as a data object called `linkage.rl`.
 
 ```{r}
 data("linkage.rl")
