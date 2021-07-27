@@ -1,6 +1,7 @@
 # representr 0.1.2
 
 - Remove dependencies on `blink` and `stringdist` packages which are no longer supported on CRAN
+- Don't test long running examples
 
 
 # representr 0.1.1
