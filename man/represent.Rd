@@ -55,6 +55,12 @@ rep_dat_minimax <- represent(rl_reg1, identity.rl_reg1, "proto_minimax", id = FA
     scale = TRUE, parallel = FALSE)
 head(rep_dat_minimax)
 
+## with alternative tie breaker
+rep_dat_minimax <- represent(rl_reg1, identity.rl_reg1, "proto_minimax", id = FALSE,
+    distance = dist_col_type, col_type = col_type, weights = weights, orders = orders,
+    ties_fn = maxmin_compare, scale = TRUE, parallel = FALSE)
+head(rep_dat_minimax)
+
 ## composite prototyping
 rep_dat_composite <- represent(rl_reg1, identity.rl_reg1, "composite",
                                col_type = col_type, parallel = FALSE)

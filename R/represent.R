@@ -31,6 +31,12 @@
 #'     scale = TRUE, parallel = FALSE)
 #' head(rep_dat_minimax)
 #'
+#' ## with alternative tie breaker
+#' rep_dat_minimax <- represent(rl_reg1, identity.rl_reg1, "proto_minimax", id = FALSE,
+#'     distance = dist_col_type, col_type = col_type, weights = weights, orders = orders,
+#'     ties_fn = maxmin_compare, scale = TRUE, parallel = FALSE)
+#' head(rep_dat_minimax)
+#'
 #' ## composite prototyping
 #' rep_dat_composite <- represent(rl_reg1, identity.rl_reg1, "composite",
 #'                                col_type = col_type, parallel = FALSE)
@@ -60,6 +66,13 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
       stop("Must supply distance function for proto_minimax method. See help('clust_proto_minimax') for more options.")
     else if(class(args[["distance"]]) != "function")
       stop("Must supply distance function for proto_minimax.")
+
+    if("ties_fn" %in% arg_names) {
+      if(!(is.null(args[["ties_fn"]])))
+        if(class(args[["ties_fn"]]) != "function")
+          stop("Must supply ties function as a function for proto_minimax if not random.")
+    }
+
   } else if(rep_method == "composite") {
     if(!("col_type" %in% arg_names))
       stop("Must supply column types for composite method. See help('clust_composite') for more options.")
@@ -114,9 +127,21 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
     args$weights <- args$weights*sca/sum(args$weights*sca)
   }
 
+
   ## apply representative method to each cluster
   clusters <- split(data, linkage)
   k <- length(clusters)
+
+  ## get ready to compare to other points
+  if(rep_method == "proto_minimax" & !is.null(args[["ties_fn"]])) {
+    not_clusters <- lapply(seq_along(clusters), function(x){
+      if(nrow(clusters[[x]]) > 1)
+        do.call(rbind, clusters[-x])
+    })
+  } else {
+    not_clusters <- lapply(seq_along(clusters), function(x) NULL)
+  }
+  names(not_clusters) <- names(clusters)
 
   ## make dummy prob in case not specified
   if(!("prob" %in% arg_names) & rep_method == "proto_random") prob <- lapply(seq_len(k), function(i) rep(1/nrow(clusters[[i]]), nrow(clusters[[i]])))
@@ -142,7 +167,7 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
       do.call("rep_fun", c(list(cluster = clusters[[i]], weights = weights[[i]]), args)) # complicated because args = ...
   } else {
     rep_dat <- foreach::foreach(i = 1:k, .combine = rbind) %doit%
-      do.call("rep_fun", c(list(cluster = clusters[[i]]), args)) # complicated because args = ...
+      do.call("rep_fun", c(list(cluster = clusters[[i]], not_cluster = not_clusters[[i]]), args)) # complicated because args = ...
   }
 
   if(parallel) doParallel::stopImplicitCluster()

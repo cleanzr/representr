@@ -3,6 +3,7 @@
 \name{clust_proto_random}
 \alias{clust_proto_random}
 \alias{clust_proto_minimax}
+\alias{maxmin_compare}
 \title{Prototype record from a cluster.}
 \usage{
 clust_proto_random(
@@ -11,7 +12,9 @@ clust_proto_random(
   id = TRUE
 )
 
-clust_proto_minimax(cluster, distance, id = TRUE, ...)
+clust_proto_minimax(cluster, not_cluster, distance, id = TRUE, ...)
+
+maxmin_compare(ties, not_cluster, distance, ...)
 }
 \arguments{
 \item{cluster}{A data frame of the clustered records.}
@@ -21,9 +24,13 @@ clust_proto_minimax(cluster, distance, id = TRUE, ...)
 \item{id}{Logical indicator to return id of record selected (TRUE) or actual record (FALSE). Note,
 if returning id, must have original row numbers as rownames in each cluster.}
 
+\item{not_cluster}{A data frame of the records outside the cluster}
+
 \item{distance}{A distance function for comparing records}
 
 \item{...}{Additional arguments passed to the comparison function}
+
+\item{ties}{A data frame of the records that are tied}
 }
 \value{
 If \code{id = FALSE}, returns the prototype record from an individual cluster. Otherwise,
@@ -40,6 +47,10 @@ clusters <- split(rl_reg1, identity.rl_reg1)
 clust_proto_random(clusters[[1]])
 
 
-clust_proto_minimax(clusters[[1]], dist_binary)
+not_clusters <- lapply(seq_along(clusters), function(x){
+if(nrow(clusters[[x]]) > 1)
+  do.call(rbind, clusters[-x])
+})
+clust_proto_minimax(clusters[[1]], not_clusters[[1]], dist_binary)
 
 }
