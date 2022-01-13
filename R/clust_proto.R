@@ -161,8 +161,8 @@ maxmin_compare <- function(ties, not_cluster, distance, ...) {
   # select the record whose closest non-neighbor is farthest
   min_dist <- rep(NA, n)
   for(i in seq_len(n)) {
-    min_dist[i] <- median(compare[compare[, 1] == i, "dist"])
+    min_dist[i] <- min(compare[compare[, 1] == i, "dist"])
   }
-  idx <- which(min_dist == min(min_dist))
+  idx <- which(min_dist == max(min_dist))
   idx
 }

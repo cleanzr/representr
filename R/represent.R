@@ -31,6 +31,7 @@
 #'     scale = TRUE, parallel = FALSE)
 #' head(rep_dat_minimax)
 #'
+#' \dontrun{
 #' ## with alternative tie breaker
 #' rep_dat_minimax <- represent(rl_reg1, identity.rl_reg1, "proto_minimax", id = FALSE,
 #'     distance = dist_col_type, col_type = col_type, weights = weights, orders = orders,
@@ -41,6 +42,7 @@
 #' rep_dat_composite <- represent(rl_reg1, identity.rl_reg1, "composite",
 #'                                col_type = col_type, parallel = FALSE)
 #' head(rep_dat_composite)
+#' }
 #'
 #' @importFrom stats complete.cases
 #'
