@@ -35,7 +35,12 @@
 #' ## with alternative tie breaker
 #' rep_dat_minimax <- represent(rl_reg1, identity.rl_reg1, "proto_minimax", id = FALSE,
 #'     distance = dist_col_type, col_type = col_type, weights = weights, orders = orders,
-#'     ties_fn = maxmin_compare, scale = TRUE, parallel = FALSE)
+#'     ties_fn = "maxmin_compare", scale = TRUE, parallel = FALSE)
+#' head(rep_dat_minimax)
+#'
+#' rep_dat_minimax <- represent(rl_reg1, identity.rl_reg1, "proto_minimax", id = FALSE,
+#'     distance = dist_col_type, col_type = col_type, weights = weights, orders = orders,
+#'     ties_fn = "within_category_compare", scale = TRUE, parallel = FALSE)
 #' head(rep_dat_minimax)
 #'
 #' ## composite prototyping
@@ -72,7 +77,8 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
     if("ties_fn" %in% arg_names) {
       if(!(is.null(args[["ties_fn"]])))
         if(class(args[["ties_fn"]]) != "function")
-          stop("Must supply ties function as a function for proto_minimax if not random.")
+          if(class(args[["ties_fn"]]) != "character" | !exists(args[["ties_fn"]], mode='function'))
+            stop("Must supply ties function as a function or name of function for proto_minimax")
     }
 
   } else if(rep_method == "composite") {

@@ -4,6 +4,8 @@
 \alias{clust_proto_random}
 \alias{clust_proto_minimax}
 \alias{maxmin_compare}
+\alias{within_category_compare}
+\alias{random_compare}
 \title{Prototype record from a cluster.}
 \usage{
 clust_proto_random(
@@ -15,6 +17,10 @@ clust_proto_random(
 clust_proto_minimax(cluster, not_cluster, distance, id = TRUE, ...)
 
 maxmin_compare(ties, not_cluster, distance, ...)
+
+within_category_compare(ties, not_cluster, distance, ...)
+
+random_compare(ties, not_cluster, distance, ...)
 }
 \arguments{
 \item{cluster}{A data frame of the clustered records.}
