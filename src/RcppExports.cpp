@@ -10,6 +10,18 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// compute_not_clusters
+List compute_not_clusters(List clusters, CharacterVector col_type);
+RcppExport SEXP _representr_compute_not_clusters(SEXP clustersSEXP, SEXP col_typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type clusters(clustersSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type col_type(col_typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_not_clusters(clusters, col_type));
+    return rcpp_result_gen;
+END_RCPP
+}
 // dist_col_type
 double dist_col_type(DataFrame a, DataFrame b, CharacterVector col_type, NumericVector weights, List orders);
 RcppExport SEXP _representr_dist_col_type(SEXP aSEXP, SEXP bSEXP, SEXP col_typeSEXP, SEXP weightsSEXP, SEXP ordersSEXP) {
@@ -37,10 +49,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// within_category_compare_cpp
+int within_category_compare_cpp(DataFrame ties, DataFrame not_cluster, CharacterVector col_type, NumericVector weights, List orders, Function distance);
+RcppExport SEXP _representr_within_category_compare_cpp(SEXP tiesSEXP, SEXP not_clusterSEXP, SEXP col_typeSEXP, SEXP weightsSEXP, SEXP ordersSEXP, SEXP distanceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type ties(tiesSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type not_cluster(not_clusterSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type col_type(col_typeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< List >::type orders(ordersSEXP);
+    Rcpp::traits::input_parameter< Function >::type distance(distanceSEXP);
+    rcpp_result_gen = Rcpp::wrap(within_category_compare_cpp(ties, not_cluster, col_type, weights, orders, distance));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_representr_compute_not_clusters", (DL_FUNC) &_representr_compute_not_clusters, 2},
     {"_representr_dist_col_type", (DL_FUNC) &_representr_dist_col_type, 5},
     {"_representr_levenshtein", (DL_FUNC) &_representr_levenshtein, 2},
+    {"_representr_within_category_compare_cpp", (DL_FUNC) &_representr_within_category_compare_cpp, 6},
     {NULL, NULL, 0}
 };
 

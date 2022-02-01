@@ -1,7 +1,8 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-//' String distance functions
+//' levenshtein
+//' Internal String distance functions
 //'
 //' @param str1 string 1
 //' @param str2 string 2.
@@ -10,7 +11,6 @@ using namespace Rcpp;
 //' @references {
 //'   M. E., Macherki (2016): Algorithm:Levenshtein Rcpp. figshare. Software. https://doi.org/10.6084/m9.figshare.3386308.v1
 //' }
-//' @export
 // [[Rcpp::export]]
 int levenshtein(std::string str1, std::string str2) {
   int lenStr1 = str1.size();

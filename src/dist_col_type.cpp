@@ -3,14 +3,13 @@
 using namespace Rcpp;
 
 
+//' dist_col_type
 //' Inner column type record distance function
 //'
 //' @param a record a
 //' @param b record b
 //' @param col_type A vector encoding the column type for each column in the dataset. Can take values
 //' in "categorical", "ordinal", "string", or "numeric"
-//' @param string_dist String distance function. Default is edit distance. Function must take at least
-//' two arguments (strings)
 //' @param weights A vector of weights for each column for making some column distances more important. Must sum to 1.
 //' Defaults to equal weights.
 //' @param orders A named list containing the order of the levels in each ordinal column. Defaults to NULL,

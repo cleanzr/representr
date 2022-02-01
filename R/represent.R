@@ -40,7 +40,7 @@
 #'
 #' rep_dat_minimax <- represent(rl_reg1, identity.rl_reg1, "proto_minimax", id = FALSE,
 #'     distance = dist_col_type, col_type = col_type, weights = weights, orders = orders,
-#'     ties_fn = "within_category_compare", scale = TRUE, parallel = FALSE)
+#'     ties_fn = "within_category_compare_cpp", scale = TRUE, parallel = FALSE)
 #' head(rep_dat_minimax)
 #'
 #' ## composite prototyping
@@ -142,10 +142,11 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
 
   ## get ready to compare to other points
   if(rep_method == "proto_minimax" & !is.null(args[["ties_fn"]])) {
-    not_clusters <- lapply(seq_along(clusters), function(x){
-      if(nrow(clusters[[x]]) > 1)
-        do.call(rbind, clusters[-x])
-    })
+    # not_clusters <- lapply(seq_along(clusters), function(x){
+    #   if(nrow(clusters[[x]]) > 1)
+    #     do.call(rbind, clusters[-x])
+    # })
+    not_clusters <- compute_not_clusters(clusters, col_type)
   } else {
     not_clusters <- lapply(seq_along(clusters), function(x) NULL)
   }

@@ -38,7 +38,7 @@ dist_binary <- function(a, b) {
 #'     "High school graduates, no college", "Some college or associate degree",
 #'     "Bachelor's degree only", "Advanced degree"))
 #'
-#' dist_col_type(rl_reg1[1,], rl_reg1[2,], col_type = type, order = order)
+#' dist_col_type_slow(rl_reg1[1,], rl_reg1[2,], col_type = type, order = order)
 #'
 #' @importFrom utils adist
 #' @export
