@@ -65,6 +65,8 @@ clust_proto_random <- function(cluster, prob = rep(1/nrow(cluster), nrow(cluster
 #'
 #' @export
 clust_proto_minimax <- function(cluster, not_cluster, distance, id = TRUE, ...) {
+
+
   if(any(is.na(as.numeric(rownames(cluster)))) & id)
     stop("If returning id, must have original row numbers as rownames.")
 
@@ -79,18 +81,33 @@ clust_proto_minimax <- function(cluster, not_cluster, distance, id = TRUE, ...) 
   } else {
     ties_fn <- random_compare
   }
+
   n <- nrow(cluster)
+
+  if("ties_dist_stat" %in% arg_names) {
+    ties_dist_stat <- args[["ties_dist_stat"]]
+    args <- args[-which(arg_names == "ties_dist_stat")]
+    arg_names <- names(args)
+  } else {
+    ties_dist_stat <- rep(NA, n)
+  }
+
+  if("update_ties" %in% arg_names) {
+    update_ties <- args[["update_ties"]]
+    args <- args[-which(arg_names == "update_ties")]
+    arg_names <- names(args)
+  } else {
+    update_ties <- FALSE
+  }
 
   # if cluster is of size 1, nothing to do
   if(n == 1) {
-    if(!id) {
-      return(cluster)
-    } else {
-      return(as.numeric(rownames(cluster)[1]))
-    }
+    idx <- 1
   } else if(n == 2) {
     ## always will be a tie
-    idx <- do.call(handle_ties, c(list(ties = cluster, not_cluster = not_cluster, distance = distance, ties_fn = ties_fn), args))
+    which_ties <- do.call(handle_ties, c(list(ties = cluster, not_cluster = not_cluster, distance = distance, ties_fn = ties_fn, ties_dist_stat = ties_dist_stat), args))
+    idx <- which_ties[["idx"]]
+    ties_dist_stat <- which_ties[["ties"]]
   } else {
     # if cluster is of size > 2, need to compare records
     compare <- do.call(distance_compare, c(list(recs1 = cluster, recs2 = cluster, compare_idx = data.frame(t(combn(n, 2))), distance = distance), args))
@@ -103,48 +120,66 @@ clust_proto_minimax <- function(cluster, not_cluster, distance, id = TRUE, ...) 
     # if rows are exactly equal, pick the first one
     if(length(idx) > 1) {
       all_idx <- idx
-      idx <- all_idx[do.call(handle_ties, c(list(ties = cluster[idx,], not_cluster = not_cluster, distance = distance, ties_fn = ties_fn), args))]
+      which_ties <- do.call(handle_ties, c(list(ties = cluster[idx,], not_cluster = not_cluster, distance = distance, ties_fn = ties_fn, ties_dist_stat = ties_dist_stat), args))
+      idx <- all_idx[which_ties[["idx"]]]
+      ties_dist_stat[all_idx] <- which_ties[["ties"]]
     }
   }
 
+  ## store appropriate results
   if(!id) {
-    cluster[idx, ]
+    res <- cluster[idx, ]
   } else {
-    as.numeric(rownames(cluster)[idx])
+    res <- as.numeric(rownames(cluster)[idx])
+  }
+
+  ## if need to send the updated ties max distance
+  if(update_ties) {
+    list(rep = res, ties = ties_dist_stat)
+  } else {
+    res
   }
 }
 
 #' @param ties A data frame of the records that are tied
 #' @param not_cluster A data frame of the records outside the cluster
 #' @param distance A distance function for comparing records
+#' @param ties_dist_stat Vector containing a statistic of distances for each tied record
 #' @param ... Additional arguments passed to the comparison function
 #'
 #' @rdname clust_proto_random
-maxmin_compare <- function(ties, not_cluster, distance, ...) {
+maxmin_compare <- function(ties, not_cluster, distance, ties_dist_stat, ...) {
   n <- nrow(ties)
   m <- nrow(not_cluster)
 
   compare <- distance_compare(ties, not_cluster, data.frame(expand.grid(seq_len(n), seq_len(m))), distance, ...)
 
   # select the record whose closest non-neighbor is farthest
-  which.max(unlist(lapply(seq_len(nrow(ties)), function(row_id) {min(compare[compare[, 1] == row_id,"dist"])})))
+  need_ties_dist <- which(is.na(ties_dist_stat))
+  ties_dist_stat[need_ties_dist] <- unlist(lapply(need_ties_dist, function(row_id) {min(compare[compare[, 1] == row_id,"dist"])}))
+
+  list(idx = which.max(ties_dist_stat),
+       ties = ties_dist_stat)
 }
 
 #' @param ties A data frame of the records that are tied
 #' @param not_cluster A data frame of the records outside the cluster
 #' @param distance A distance function for comparing records
+#' @param ties_dist_stat Vector containing a statistic of distances for each tied record
 #' @param ... Additional arguments passed to the comparison function
 #'
 #'
 #' @rdname clust_proto_random
-within_category_compare <- function(ties, not_cluster, distance, ...) {
+within_category_compare <- function(ties, not_cluster, distance, ties_dist_stat, ...) {
   args <- list(...)
   col_type <- args[["col_type"]]
 
   # for each tied record, compare to non cluster records that match categorical values
   # get the record with min max dist within category to non cluster records
-  which.min(unlist({
-    lapply(seq_len(nrow(ties)), function(i) {
+  need_ties_dist <- which(is.na(ties_dist_stat))
+
+  ties_dist_stat[need_ties_dist] <- unlist({
+    lapply(need_ties_dist, function(i) {
       rec <- ties[i,]
       # get categorical values
       not_clust_cats <- not_cluster[, col_type %in% c("categorical", "ordinal")]
@@ -160,18 +195,23 @@ within_category_compare <- function(ties, not_cluster, distance, ...) {
       # if there were no matches in category, return infinity to that record isn't chosen
       ifelse(nrow(compare) > 0, max(compare[,"dist"]), Inf)
     })
-  }))
+  })
+
+  list(idx = which.min(ties_dist_stat),
+       ties = ties_dist_stat)
+
 }
 
 #' @param ties A data frame of the records that are tied
 #' @param not_cluster A data frame of the records outside the cluster
 #' @param distance A distance function for comparing records
+#' @param ties_dist_stat Vector containing a statistic of distances for each tied record
 #' @param ... Additional arguments passed to the comparison function
 #'
 #' @rdname clust_proto_random
-random_compare <- function(ties, not_cluster, distance, ...) {
+random_compare <- function(ties, not_cluster, distance, ties_dist_stat, ...) {
   n <- nrow(ties)
-  sample(seq_len(n), 1)
+  list(idx = sample(seq_len(n), 1), ties = ties_dist_stat)
 }
 
 #' handle_ties
@@ -180,18 +220,20 @@ random_compare <- function(ties, not_cluster, distance, ...) {
 #' @param ties A data frame of the records that are tied
 #' @param not_cluster A data frame of the records outside the cluster
 #' @param distance A distance function for comparing records
+#' @param ties_dist_stat Vector containing a statistic of distances for each tied record
 #' @param ... Additional arguments passed to the comparison function
 #'
 #' @noRd
-handle_ties <- function(ties, not_cluster, distance, ties_fn, ...) {
+handle_ties <- function(ties, not_cluster, distance, ties_fn, ties_dist_stat, ...) {
   if(nrow(unique(ties)) == 1) {
     ## identical rows
     idx <- which.min(as.numeric(rownames(ties)))
   } else {
-    idx <- ties_fn(ties = ties, not_cluster = not_cluster, distance = distance, ...)
+    idx <- ties_fn(ties = ties, not_cluster = not_cluster, distance = distance, ties_dist_stat = ties_dist_stat, ...)
   }
   ## if there are still ties
-  if(length(idx) > 1) idx <- sample(idx, 1)
+  if(length(idx[["idx"]]) > 1) idx <- list(idx = sample(idx[["idx"]], 1), idx[["ties"]])
+  idx
 }
 
 #' distance_compare

@@ -14,6 +14,7 @@
 #' @param scale If "proto_minimax" method is specified, logical flag to indicate if the column-type
 #'     distance function should be scaled so that each distance takes value in [0, 1]. Defaults to
 #'     FALSE.
+#' @param verbose Flag to turn on or off printed progress of the sampler.
 #' @examples
 #'
 #' data(rl_reg1)
@@ -39,7 +40,7 @@
 #' }
 #'
 #' @export
-pp_weights <- function(data, posterior_linkage, rep_method, parallel = TRUE, cores = NULL, ..., scale = FALSE) {
+pp_weights <- function(data, posterior_linkage, rep_method, parallel = TRUE, cores = NULL, ..., scale = FALSE, verbose = FALSE) {
   ## error handling
   if(!("data.frame" %in% class(data)))
     stop("data must be a data frame.")
@@ -106,22 +107,39 @@ pp_weights <- function(data, posterior_linkage, rep_method, parallel = TRUE, cor
   }
 
   # `%doit%` <- ifelse(
-  `%doit%` <- foreach::`%do%`
-
   # if(parallel) doParallel::registerDoParallel(cores = cores)
-
   ## register i so that check won't complain
-  i <- NULL
+  # i <- NULL
 
   m <- nrow(posterior_linkage)
+  n <- nrow(data)
 
-  posterior_rep <- foreach::foreach(i = 1:m, .combine = cbind) %doit% {
+  posterior_rep <- matrix(NA, nrow = n, ncol = m)
+  ties_dist_stat <- rep(NA, n)
+  for(i in seq_len(m)) {
+
+    if(i %% (m/10) == 0 & verbose) cat(paste0("Linkage iteration: ", i, " / ", m, "\n"))
+
     if(rep_method == "proto_random" & "prob" %in% arg_names) args[["prob"]] <- prob[[i]]
-    idx <- do.call("represent", c(list(data = data, linkage = posterior_linkage[i,], rep_method = rep_method, scale = scale, id = TRUE, parallel = parallel), args))
-    seq_len(nrow(data)) %in% idx
+
+    idx_ties <- do.call("represent", c(list(data = data, linkage = posterior_linkage[i,], rep_method = rep_method, scale = scale, id = TRUE, parallel = parallel, ties_dist_stat = ties_dist_stat, update_ties = TRUE), args))
+
+    if(class(idx_ties) == "list") {
+      posterior_rep[, i] <- seq_len(nrow(data)) %in% idx_ties[[1]][, 1]
+      ties_dist_stat <- idx_ties[[2]]
+    } else {
+      posterior_rep[, i] <- seq_len(nrow(data)) %in% idx_ties
+    }
+
   }
+
+  # posterior_rep <- foreach::foreach(i = 1:m, .combine = cbind) %doit% {
+  #   if(rep_method == "proto_random" & "prob" %in% arg_names) args[["prob"]] <- prob[[i]]
+  #   idx <- do.call("represent", c(list(data = data, linkage = posterior_linkage[i,], rep_method = rep_method, scale = scale, id = TRUE, parallel = parallel), args))
+  #   seq_len(nrow(data)) %in% idx
+  # }
 
   # if(parallel) doParallel::stopImplicitCluster()
 
-  rowSums(posterior_rep)/nrow(posterior_linkage)
+  rowSums(posterior_rep)/m
 }
