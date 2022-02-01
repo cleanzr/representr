@@ -14,8 +14,12 @@ RoxygenNote: 7.1.2
 Imports:
   doParallel,
   foreach,
-  dplyr
-Suggests: knitr,
+  dplyr,
+  Rcpp
+Suggests: 
+  knitr,
   rmarkdown,
   ggplot2
+LinkingTo: 
+  Rcpp
 VignetteBuilder: knitr

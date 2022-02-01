@@ -2,12 +2,12 @@
 % Please edit documentation in R/record_distance.R
 \name{dist_binary}
 \alias{dist_binary}
-\alias{dist_col_type}
+\alias{dist_col_type_slow}
 \title{The distance between two records}
 \usage{
 dist_binary(a, b)
 
-dist_col_type(
+dist_col_type_slow(
   a,
   b,
   col_type,
