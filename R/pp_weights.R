@@ -117,7 +117,7 @@ pp_weights <- function(data, posterior_linkage, rep_method, parallel = TRUE, cor
 
   posterior_rep <- foreach::foreach(i = 1:m, .combine = cbind) %doit% {
     if(rep_method == "proto_random" & "prob" %in% arg_names) args[["prob"]] <- prob[[i]]
-    idx <- do.call("represent", c(list(data = data, linkage = posterior_linkage[i,], rep_method = rep_method, scale = scale, id = TRUE, parallel = parallel), args))
+    idx <- do.call("represent", c(list(data = data, linkage = posterior_linkage[i,], rep_method = rep_method, scale = scale, id = TRUE, parallel = parallel, cores = cores), args))
     seq_len(nrow(data)) %in% idx
   }
 
