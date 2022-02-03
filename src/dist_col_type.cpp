@@ -28,7 +28,7 @@ double dist_col_type(DataFrame a, DataFrame b, CharacterVector col_type, Numeric
       NumericVector a_val = a[j]; NumericVector b_val = b[j];
       double a_num = a_val[0]; double b_num = b_val[0];
 
-      dist +=  weights[j] * abs(a_num - b_num);
+      dist +=  weights[j] * fabs(a_num - b_num);
 
     } else if(col_type[j] == "categorical") {
       // categorical: weighted binary distance

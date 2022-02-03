@@ -5,3 +5,5 @@
 ^doc$
 ^Meta$
 ^CRAN-RELEASE$
+^README\.md$
+^revdep$

@@ -1,3 +1,7 @@
+# representr 0.1.3
+
+- Update distance and other internal functions to be Rcpp for speed improvements
+
 # representr 0.1.2
 
 - Remove dependencies on `blink` and `stringdist` packages which are no longer supported on CRAN
