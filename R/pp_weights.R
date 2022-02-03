@@ -14,6 +14,9 @@
 #' @param scale If "proto_minimax" method is specified, logical flag to indicate if the column-type
 #'     distance function should be scaled so that each distance takes value in [0, 1]. Defaults to
 #'     FALSE.
+#' @param verbose Flag for progress messages.
+#' @param save_loc Location to save intermediate progress. If NULL, no intermediate progress is saved.
+#' @importFrom utils write.csv
 #' @examples
 #'
 #' data(rl_reg1)
@@ -39,7 +42,7 @@
 #' }
 #'
 #' @export
-pp_weights <- function(data, posterior_linkage, rep_method, parallel = TRUE, cores = NULL, ..., scale = FALSE) {
+pp_weights <- function(data, posterior_linkage, rep_method, parallel = TRUE, cores = NULL, ..., scale = FALSE, save_loc = NULL, verbose = FALSE) {
   ## error handling
   if(!("data.frame" %in% class(data)))
     stop("data must be a data frame.")
@@ -115,11 +118,25 @@ pp_weights <- function(data, posterior_linkage, rep_method, parallel = TRUE, cor
 
   m <- nrow(posterior_linkage)
 
-  posterior_rep <- foreach::foreach(i = 1:m, .combine = cbind) %doit% {
+  # posterior_rep <- foreach::foreach(i = 1:m, .combine = cbind) %doit% {
+  #   if(rep_method == "proto_random" & "prob" %in% arg_names) args[["prob"]] <- prob[[i]]
+  #   idx <- do.call("represent", c(list(data = data, linkage = posterior_linkage[i,], rep_method = rep_method, scale = scale, id = TRUE, parallel = parallel, cores = cores), args))
+  #   seq_len(nrow(data)) %in% idx
+  # }
+
+
+  posterior_rep <- matrix(nrow = nrow(data), ncol = 0)
+
+  for(i in seq_len(m)) {
+    if(verbose & (i %% (m/10) == 0)) cat(paste0("iteration: ", i, " / ", m, "\n"))
     if(rep_method == "proto_random" & "prob" %in% arg_names) args[["prob"]] <- prob[[i]]
+
     idx <- do.call("represent", c(list(data = data, linkage = posterior_linkage[i,], rep_method = rep_method, scale = scale, id = TRUE, parallel = parallel, cores = cores), args))
-    seq_len(nrow(data)) %in% idx
+
+    posterior_rep <- cbind(posterior_rep, seq_len(nrow(data)) %in% idx)
+    if(!is.null(save_loc)) write.csv(posterior_rep, file = save_loc, row.names = FALSE)
   }
+
 
   # if(parallel) doParallel::stopImplicitCluster()
 

@@ -11,7 +11,9 @@ pp_weights(
   parallel = TRUE,
   cores = NULL,
   ...,
-  scale = FALSE
+  scale = FALSE,
+  save_loc = NULL,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -35,6 +37,10 @@ as the number of rows in the cluster \code{prob[[iteration][[cluster]]}.}
 \item{scale}{If "proto_minimax" method is specified, logical flag to indicate if the column-type
 distance function should be scaled so that each distance takes value in [0, 1]. Defaults to
 FALSE.}
+
+\item{save_loc}{Location to save intermediate progress. If NULL, no intermediate progress is saved.}
+
+\item{verbose}{Flag for progress messages.}
 }
 \description{
 Get posterior weights for each record post record-linkage using posterior prototyping.
