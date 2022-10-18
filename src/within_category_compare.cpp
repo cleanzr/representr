@@ -49,7 +49,7 @@ int within_category_compare_cpp(DataFrame ties, DataFrame not_cluster, Character
   // which columns are character or ordinal to match on
   NumericVector which_char(p);
   for(int i = 0; i < p; i++) {
-    which_char[i] = (col_type[i] == "categorical") | (col_type[i] == "ordinal");
+    which_char[i] = (col_type[i] == "categorical") || (col_type[i] == "ordinal");
   }
 
   // how many fields to compare on

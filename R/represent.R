@@ -54,7 +54,7 @@
 #' @export
 represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, ..., scale = FALSE) {
   ## error handling
-  if(!("data.frame" %in% class(data)))
+  if(!inherits(data, "data.frame"))
     stop("data must be a data frame.")
   if(length(linkage) != nrow(data))
     stop("linkage must have one entry for every record.")
@@ -71,13 +71,13 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
   if(rep_method == "proto_minimax") {
     if(!("distance" %in% arg_names))
       stop("Must supply distance function for proto_minimax method. See help('clust_proto_minimax') for more options.")
-    else if(class(args[["distance"]]) != "function")
+    else if(!is.function(args[["distance"]]))
       stop("Must supply distance function for proto_minimax.")
 
     if("ties_fn" %in% arg_names) {
       if(!(is.null(args[["ties_fn"]])))
-        if(class(args[["ties_fn"]]) != "function")
-          if(class(args[["ties_fn"]]) != "character" | !exists(args[["ties_fn"]], mode='function'))
+        if(!is.function(args[["ties_fn"]]))
+          if(!is.character(args[["ties_fn"]]) | !exists(args[["ties_fn"]], mode='function'))
             stop("Must supply ties function as a function or name of function for proto_minimax")
     }
 
@@ -89,7 +89,7 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
       weights <- args[["weights"]]
       if(length(weights) != length(unique(linkage))) stop("Weights must be list of length equal to number of clusters.")
       if(length(do.call(c, weights)) != nrow(data)) stop("Total number of Weights must equal total number of records.")
-      if(class(do.call(c, weights)) != "numeric") stop("Weights must be numeric.")
+      if(!is.numeric(do.call(c, weights))) stop("Weights must be numeric.")
 
       ## be sure everything sums to one
       weights <- lapply(weights, function(p) p/sum(p))
@@ -103,7 +103,7 @@ represent <- function(data, linkage, rep_method, parallel = TRUE, cores = NULL, 
       prob <- args[["prob"]]
       if(length(prob) != length(unique(linkage))) stop("Probabilities must be list of length equal to number of clusters.")
       if(length(do.call(c, prob)) != nrow(data)) stop("Total number of probabilities must equal total number of records.")
-      if(class(do.call(c, prob)) != "numeric") stop("Probabilities must be numeric.")
+      if(!is.numeric(do.call(c, prob))) stop("Probabilities must be numeric.")
 
       ## be sure everything sums to one
       prob <- lapply(prob, function(p) p/sum(p))

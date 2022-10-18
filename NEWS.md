@@ -1,3 +1,9 @@
+# representr 0.1.4
+
+- Fix binary comparison using `||` instead of `|`
+- Update error checks to use `is` and `inherits` instead of class comparisons
+- Update references to reflect current paper citation
+
 # representr 0.1.3
 
 - Update distance and other internal functions to be Rcpp for speed improvements

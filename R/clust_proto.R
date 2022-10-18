@@ -21,7 +21,7 @@ clust_proto_random <- function(cluster, prob = rep(1/nrow(cluster), nrow(cluster
     stop("If returning id, must have original row numbers as rownames.")
   if(length(prob) != nrow(cluster))
     stop("prob must be the same length as nrow(cluster).")
-  if(class(prob) != "numeric")
+  if(!is.numeric(prob))
     stop("prob must be a numeric vector.")
   if(round(sum(prob), 15) != 1)
     stop("prob must sum to 1.")

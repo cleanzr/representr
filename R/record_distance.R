@@ -53,7 +53,7 @@ dist_col_type_slow <- function(a, b, col_type, string_dist = utils::adist, weigh
     stop("Must have column type for each column.")
   if(!all(names(table(col_type)) %in% c("categorical", "ordinal", "string", "numeric")))
     stop("Column type must be 'categorical', 'ordinal', 'string', or 'numeric'")
-  if(class(string_dist) != "function")
+  if(!is.function(string_dist))
     stop("string_dist must be a function.")
   if(length(weights) != length(a)) {
     stop("Weights must be of same length as number of columns")

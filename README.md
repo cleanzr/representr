@@ -14,7 +14,7 @@ devtools::install_github("cleanzr/representr", build_vignettes = TRUE)
 
 This package implements the methods introduced in the following paper:
 
-> Kaplan, Andee, Brenda Betancourt, and Rebecca C. Steorts. "Posterior Prototyping: Bridging the Gap between Bayesian Record Linkage and Regression." arXiv preprint arXiv:1810.01538 (2020).
+> Andee Kaplan, Brenda Betancourt & Rebecca C. Steorts (2022) A Practical Approach to Proper Inference with Linked Data, The American Statistician, DOI: 10.1080/00031305.2022.2041482
 
 
 ## Background

@@ -44,7 +44,7 @@
 #' @export
 pp_weights <- function(data, posterior_linkage, rep_method, parallel = TRUE, cores = NULL, ..., scale = FALSE, save_loc = NULL, verbose = FALSE) {
   ## error handling
-  if(!("data.frame" %in% class(data)))
+  if(!inherits(data, "data.frame"))
     stop("data must be a data frame.")
   if(ncol(posterior_linkage) != nrow(data))
     stop("posterior_linkage must have one column for every record.")
@@ -59,13 +59,13 @@ pp_weights <- function(data, posterior_linkage, rep_method, parallel = TRUE, cor
   if(rep_method == "proto_minimax") {
     if(!("distance" %in% arg_names))
       stop("Must supply distance function for proto_minimax method. See help('clust_proto_minimax') for more options.")
-    else if(class(args[["distance"]]) != "function")
+    else if(!is.function(args[["distance"]]))
       stop("Must supply distance function for proto_minimax.")
   } else if(rep_method == "proto_random") {
     if("prob" %in% arg_names) {
       ## if probabilities are passed through
       ## must be a function to calculate prob list for each iteration
-      if(class(args[["prob"]]) != "list") {
+      if(!is.list(args[["prob"]])) {
         stop("prob must be a list of length equal to the number of iterations in lambda and within each must be a list of the same length as the number of clusters. Within each should be a vector of probabilities, the same length as the number of rows in the cluster.")
       } else {
         prob <- args[["prob"]]
