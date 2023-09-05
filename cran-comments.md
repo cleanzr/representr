@@ -1,7 +1,10 @@
 ## Summary of new changes
-* Fix binary comparison using `||` instead of `|`.
-* Update error checks to use `is` and `inherits` instead of class comparisons.
-* Update references to reflect current paper citation.
+* Fix PKGNAME-package \alias as per "Documenting packages" in
+R-exts, which was broken as a consequence of the breaking change:
+
+ Using @docType package no longer automatically adds a -package alias.
+ Instead document _PACKAGE to get all the defaults for package
+ documentation.
 
 ## Test environments
 * local OS X 12.6 install, R 4.2.1, x86_64

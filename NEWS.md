@@ -1,3 +1,7 @@
+# representr 0.1.5
+
+- Fix PKGNAME-package \alias as per "Documenting packages" in R-exts
+
 # representr 0.1.4
 
 - Fix binary comparison using `||` instead of `|`

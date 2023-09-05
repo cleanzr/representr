@@ -29,7 +29,7 @@
 #'
 #' @references Kaplan, Andee, Brenda Betancourt, and Rebecca C. Steorts. "Posterior Prototyping: Bridging the Gap between Bayesian Record Linkage and Regression." arXiv preprint arXiv:1810.01538 (2018).
 #'
-#' @docType package
+#' @aliases representr-package
 #' @name representr
 NULL
 
