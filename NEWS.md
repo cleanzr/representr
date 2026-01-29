@@ -1,3 +1,7 @@
+# representr 0.1.6
+
+- Remove use of dplyr functions that end in "_", which are deprecated.
+
 # representr 0.1.5
 
 - Fix PKGNAME-package \alias as per "Documenting packages" in R-exts
