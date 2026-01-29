@@ -84,7 +84,7 @@ get_freqs <- function(data_set, categoric_vars, numeric_vars, true_cut_list, wei
   bins_df$cat_vars <- rep(names(data_split), unlist(lapply(data_split, nrow)))
   bins_df[, categoric_vars] <- do.call(rbind, strsplit(bins_df$cat_vars, split = "[.]"))
 
-  data.frame(dplyr::summarise(dplyr::group_by_(bins_df, .dots = c(categoric_vars, numeric_vars)), freq = sum(weights)))
+  data.frame(dplyr::summarise(dplyr::group_by(bins_df, dplyr::pick(dplyr::all_of(c(categoric_vars, numeric_vars)))), freq = sum(weights)))
 }
 
 #' Calculate the empirical KL divergence for a representative dataset as compared to the true dataset
